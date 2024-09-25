@@ -48,9 +48,9 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "CarWebGuru"
-            artifactId = "plugins-sdk"
-            version = "1.0.8"
+            groupId = "denoson"
+            artifactId = "URVAdapter"
+            version = "1.0.0"
             afterEvaluate { from(components["release"]) }
         }
     }
