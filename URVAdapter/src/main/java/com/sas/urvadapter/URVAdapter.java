@@ -19,12 +19,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.sas.obd.console.Const;
-
 import java.util.ArrayList;
 
+
+
+
 public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
+
+    public static final int VERSION = 1;
 
     public ArrayList<URVItem> items;
     public IURVEvents events = null;
@@ -572,7 +574,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
         }
 
         if(showCmd) {
-            addItem(0, Const.ITEM_MSG_OUT, msg, "", null);
+            addItem(0, 0, msg, "", null);
             notifyItemChanged(getItemCount() - 1);
             scrollListToBottom();
         }
@@ -581,46 +583,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
             events.onCommand(getTerminalBase(), msg);
         }
 
-        /*
-        if(useBase && !TextUtils.isEmpty(terminalBase)) {
-            msg = terminalBase + " " + msg;
-        }
-
-        boolean validCommand = false;
-        int iSpace = msg.indexOf(" ");
-        if(iSpace >= 0) {
-            final String s1 = msg.substring(0, iSpace);
-            final String s2 = msg.substring(iSpace+1).trim();
-
-            if(!TextUtils.isEmpty(s2)) {
-                switch (s1) {
-                    case CMD_ODB:
-                        validCommand = true;
-                        events.onObdCommand(s2);
-                        break;
-
-                    case CMD_APP:
-                        validCommand = true;
-                        events.onAppCommand(s2);
-                        break;
-
-                    case CMD_CWG:
-                        validCommand = true;
-                        events.onCwgCommand(s2);
-                        break;
-
-                    case CMD_ADMIN:
-                        validCommand = true;
-                        events.onAdminCommand(s2);
-                        break;
-                }
-            }
-        }
-
-        if(!validCommand) {
-            events.onCommonCommand(msg);
-        }
-      */
     }
 
     public String getTerminalBase() {
