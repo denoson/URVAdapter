@@ -21,7 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-
+/**
+ * Date: 2024.09.25
+ * Author: Den Vigovski
+ * Universal RecycleView adapter
+ * Licence: This is an experimental project for educational purposes. Not for commercial use.
+ */
 
 
 public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {

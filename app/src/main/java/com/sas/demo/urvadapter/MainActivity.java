@@ -18,6 +18,13 @@ import com.sas.urvadapter.IURVEvents;
 import com.sas.urvadapter.URVAdapter;
 import com.sas.urvadapter.URVItem;
 
+/**
+ * Date: 2024.09.25
+ * Author: Den Vigovski
+ * Universal RecycleView adapter
+ * Licence: This is an experimental project for educational purposes. Not for commercial use.
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     private URVAdapter adapter;
