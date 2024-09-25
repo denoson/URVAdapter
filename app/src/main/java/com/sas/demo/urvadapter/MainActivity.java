@@ -50,15 +50,20 @@ public class MainActivity extends AppCompatActivity {
         fillDemoMessages();
 
         TextView lbl = findViewById(R.id.lbl);
-        lbl.setText(adapter.getClass().getSimpleName() + " Version " + URVAdapter.VERSION);
+        lbl.setText("Adapter " + adapter.getClass().getSimpleName() + " Version " + URVAdapter.VERSION);
     }
 
     private void fillDemoMessages() {
-        for(int i = 0; i < URVAdapter.COLORS_BCK.length; i++) {
-           URVItem item = adapter.addItem(i, 0, "Color-" + i, "Description " + i, null);
-           item.setTextIcon("X");
-           item.setCustomBackgroundColor(URVAdapter.COLORS_BCK[i]);
+        URVItem item;
+
+        int i = 0;
+        for(int color : URVAdapter.COLORS_BCK) {
+            item = adapter.addItem(i, 0, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit " + i, null);
+            item.setTextIcon("X");
+            item.setCustomBackgroundColor(color);
+            i++;
         }
+
         adapter.notifyDataSetChanged();
     }
 
@@ -126,5 +131,10 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String IntToHex(int value) {
+        String hex = Integer.toHexString(value).toUpperCase();
+        return ((value < 16) ? "0" : "") + hex;
     }
 }
