@@ -3,10 +3,14 @@ package com.sas.urvadapter;
 public class URVItem {
 
     private int index = -1;
-    private int id;
-    private String uid = "";
+
+    private long id;
     private long iddb;
+    private long idOwner = 0;
+
+    private String uid = "";
     private int action = 0;
+    private int type = 0;
     private int group = 0;
     private int viewType = 0;
     private int logic = 0;
@@ -46,11 +50,12 @@ public class URVItem {
         }
     }
 
-    public int getId() {
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -60,6 +65,22 @@ public class URVItem {
 
     public void setIddb(long iddb) {
         this.iddb = iddb;
+    }
+
+    public long getIdOwner() {
+        return idOwner;
+    }
+
+    public void setIdOwner(long idOwner) {
+        this.idOwner = idOwner;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getAction() {
