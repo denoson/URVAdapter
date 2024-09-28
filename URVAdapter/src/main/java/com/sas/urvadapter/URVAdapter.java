@@ -29,13 +29,14 @@ import java.util.ArrayList;
  */
 
 
-public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
+public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public static final int VERSION = 1;
 
     public ArrayList<URVItem> items;
     public IURVEvents events = null;
     public URVResources ResourceItems;
+    public URVCounterResources ResourceCounter;
 
     public static final int[] COLORS_BCK = {
             0xFFB71C1C, 0xFF880E4F, 0xFF4A148C, 0xFF311B92, 0xFF1A237E,
@@ -93,6 +94,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
     public URVAdapter() {
         items = new ArrayList<URVItem>();
         ResourceItems = new URVResources();
+        ResourceCounter = new URVCounterResources();
     }
 
 
@@ -121,7 +123,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
     }
 
 
-
     public void initRecyclerView(Context ctx, RecyclerView rList) {
         rView = rList;
         rView.setLayoutManager(new LinearLayoutManager(ctx));
@@ -131,12 +132,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
 
 
     @Override
-    public void onBindViewHolder(@NonNull Q3ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull URViewHolder holder, int position) {
         URVItem data = items.get(position);
-
-        switch (data.getViewType()) {
-
-        }
 
         holder.updateSelection(data.isSelected());
 
@@ -178,6 +175,13 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
             holder.getIconView().setVisibility(View.VISIBLE);
         }
 
+        if(ResourceCounter.isEnabled()) {
+            holder.setCounterBoxVisible(data.Counter.isVisible());
+            holder.setCounter(data.Counter.getCounter());
+            holder.setCounterUnits(data.Counter.getUnits());
+        }
+
+
         if (holder.getStyleBck() != null) {
             Drawable background = holder.getStyleBck().getBackground();
             if (data.getCustomBackgroundColor() == 0) {
@@ -192,7 +196,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
 
     @NonNull
     @Override
-    public Q3ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public URViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(getIdResourceByType(viewType), parent, false);
         if(isTextIcons() & (resItemTextIcon != 0)) {
             TextView tIcon = v.findViewById(resItemTextIcon);
@@ -200,7 +204,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
                 tIcon.setTypeface(iconFont);
             }
         }
-        return new Q3ViewHolder(v, events);
+        return new URViewHolder(v, events);
     }
 
 
@@ -373,22 +377,23 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
 
 
 
-    public class Q3ViewHolder extends RecyclerView.ViewHolder {
+    public class URViewHolder extends RecyclerView.ViewHolder {
 
         private int index;
 
         private final ImageView img;
         private final TextView txtIcon;
-
         private final TextView title;
         private final TextView descr;
-
         private final FrameLayout panelBck;
-
         private final View styleBck;
 
+        private final View counterPanel;
+        private final TextView counterValue;
+        private final TextView counterUnits;
 
-        public Q3ViewHolder(View v, final IURVEvents events) {
+
+        public URViewHolder(View v, final IURVEvents events) {
             super(v);
 
             v.setOnClickListener(new View.OnClickListener() {
@@ -406,24 +411,24 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
                 }
             });
 
-            if(resItemTitle != 0) {
+            if (resItemTitle != 0) {
                 title = v.findViewById(resItemTitle);
-                title.setClickable(false);
+                techViewSetup(title, true);
             } else title = null;
 
-            if(resItemDescr != 0) {
+            if (resItemDescr != 0) {
                 descr = v.findViewById(resItemDescr);
-                descr.setClickable(false);
+                techViewSetup(descr, true);
             } else descr = null;
 
-            if(resItemImage != 0) {
+            if (resItemImage != 0) {
                 img = v.findViewById(resItemImage);
-                img.setClickable(false);
+                techViewSetup(img, true);
             } else img = null;
 
-            if(resItemTextIcon != 0) {
+            if (resItemTextIcon != 0) {
                 txtIcon = v.findViewById(resItemTextIcon);
-                txtIcon.setClickable(false);
+                techViewSetup(txtIcon, true);
                 //txtIcon.setOnClickListener(new View.OnClickListener() {
                 //    @Override
                 //    public void onClick(View view) {
@@ -432,22 +437,45 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
                 //});
             } else txtIcon = null;
 
-            if(resItemStyleBck != 0) {
+            if (resItemStyleBck != 0) {
                 styleBck = v.findViewById(resItemStyleBck);
-                if(styleBck != null) {
-                    styleBck.setClickable(false);
-                }
+                techViewSetup(styleBck, true);
             } else styleBck = null;
 
-            if(resItemPanelBck != 0) {
+            if (resItemPanelBck != 0) {
                 panelBck = v.findViewById(resItemPanelBck);
-                if(panelBck != null) {
-                    panelBck.setClickable(false);
-                }
+                techViewSetup(panelBck, true);
             } else panelBck = null;
+
+
+
+            if (ResourceCounter.useBox()) {
+                counterPanel = v.findViewById(ResourceCounter.getBox());
+                techViewSetup(counterPanel, ResourceCounter.isEnabled());
+            } else counterPanel = null;
+
+            if (ResourceCounter.useCounter()) {
+                counterValue = v.findViewById(ResourceCounter.getCounter());
+                techViewSetup(counterValue, true);
+            } else counterValue = null;
+
+            if (ResourceCounter.useUnits()) {
+                counterUnits = v.findViewById(ResourceCounter.getUnits());
+                techViewSetup(counterUnits, ResourceCounter.isVisibleUnits());
+            } else counterUnits = null;
+
 
             setTextIconMode(isTextIcons());
         }
+
+
+        private void techViewSetup(View v, boolean modeVisible) {
+            if(v != null) {
+                v.setClickable(false);
+                v.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
+            }
+        }
+
 
 
         public TextView getIconView() {
@@ -500,6 +528,32 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
             }
         }
 
+
+
+        public void setCounterBoxVisible(boolean visible) {
+            setViewVisible(counterPanel, visible);
+        }
+
+        public String getCounter() {
+            return counterValue.getText().toString();
+        }
+        public void setCounter(String value) {
+            counterValue.setText(value);
+        }
+
+        public String getCounterUnits() {
+            return counterUnits.getText().toString();
+        }
+        public void setCounterUnits(String value) {
+            counterUnits.setText(value);
+        }
+
+
+        private void setViewVisible(View v, boolean visible) {
+            if(v != null) {
+                v.setVisibility(visible ? View.VISIBLE : View.GONE);
+            }
+        }
     }
 
     public int getColorSelected() {
@@ -599,4 +653,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.Q3ViewHolder> {
         lblBase.setText(this.terminalBase + baseSymbol);
     }
 
+
+    public int getLibColor(int index) {
+        return COLORS_BCK[index];
+    }
 }

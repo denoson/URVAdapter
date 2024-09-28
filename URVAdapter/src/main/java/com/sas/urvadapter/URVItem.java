@@ -2,6 +2,8 @@ package com.sas.urvadapter;
 
 public class URVItem {
 
+    public URVCounterValue Counter;
+
     private int index = -1;
 
     private long id;
@@ -44,6 +46,8 @@ public class URVItem {
         this.viewType = viewType;
         this.title = title;
         this.description = description;
+
+        Counter = new URVCounterValue();
 
         if(customData != null) {
             this.customData = customData;

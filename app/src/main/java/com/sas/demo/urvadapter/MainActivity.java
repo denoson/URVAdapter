@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
             item = adapter.addItem(i, 0, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit " + i, null);
             item.setTextIcon("X");
             item.setCustomBackgroundColor(color);
+
+            item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
+            item.Counter.setCounter(String.valueOf(i));
+            item.Counter.setUnits("Items");
+
+
             i++;
         }
 
@@ -79,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.setTextIcons(true);
         adapter.setColorSelected(Color.rgb(00, 85, 255));
         adapter.setupCheckbox(URVAdapter.COLORS_BCK[9], "L",  URVAdapter.COLORS_BCK[17], "M");
+
+
+        // Counter
+        adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
+        adapter.ResourceCounter.setVisibleUnits(false);
+        adapter.ResourceCounter.setEnabled(true);
+
 
         // Terminal - messages functions .............................................
         adapter.initTerminal(findViewById(R.id.edMessage), findViewById(R.id.btnSend), findViewById(R.id.lblTerminalBase));
