@@ -5,30 +5,40 @@ public class URVItem {
     public URVCounterValue Counter;
 
     private int index = -1;
-
     private long id;
     private long iddb;
     private long idOwner = 0;
-
     private String uid = "";
+
     private int action = 0;
     private int type = 0;
     private int group = 0;
     private int viewType = 0;
     private int logic = 0;
     private int marker = 0;
+    private int filter = 0;
+    private int mode = 0;
+    private int state = 0;
     private int clickAction = 0;
 
     private boolean selected = false;
     private boolean focused = false;
     private boolean checked = false;
+    private boolean visible = true;
+    private boolean enabled = true;
 
     private String textIcon = "";
-    private String title;
-    private String description;
+    private String title = "";
+    private String description = "";
+    private String keywords = "";
+    private String hint = "";
+    private String info = "";
+    private String note = "";
 
-    private int valueInt = 0;
     private String valueString;
+    private int valueInt = 0;
+    private float valueFloat = 0f;
+    private boolean valueBool = false;
 
     private int customBackgroundColor = 0;
 
@@ -55,6 +65,16 @@ public class URVItem {
     }
 
 
+
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public long getId() {
         return id;
     }
@@ -79,12 +99,12 @@ public class URVItem {
         this.idOwner = idOwner;
     }
 
-    public int getType() {
-        return type;
+    public String getUid() {
+        return uid;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public int getAction() {
@@ -93,6 +113,14 @@ public class URVItem {
 
     public void setAction(int action) {
         this.action = action;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getGroup() {
@@ -127,6 +155,38 @@ public class URVItem {
         this.marker = marker;
     }
 
+    public int getFilter() {
+        return filter;
+    }
+
+    public void setFilter(int filter) {
+        this.filter = filter;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getClickAction() {
+        return clickAction;
+    }
+
+    public void setClickAction(int clickAction) {
+        this.clickAction = clickAction;
+    }
+
     public boolean isSelected() {
         return selected;
     }
@@ -141,6 +201,38 @@ public class URVItem {
 
     public void setFocused(boolean focused) {
         this.focused = focused;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getTextIcon() {
+        return textIcon;
+    }
+
+    public void setTextIcon(String textIcon) {
+        this.textIcon = textIcon;
     }
 
     public String getTitle() {
@@ -159,12 +251,36 @@ public class URVItem {
         this.description = description;
     }
 
-    public int getValueInt() {
-        return valueInt;
+    public String getKeywords() {
+        return keywords;
     }
 
-    public void setValueInt(int valueInt) {
-        this.valueInt = valueInt;
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getValueString() {
@@ -175,48 +291,36 @@ public class URVItem {
         this.valueString = valueString;
     }
 
-    public String getTextIcon() {
-        return textIcon;
+    public int getValueInt() {
+        return valueInt;
     }
 
-    public void setTextIcon(String textIcon) {
-        this.textIcon = textIcon;
+    public void setValueInt(int valueInt) {
+        this.valueInt = valueInt;
     }
 
-    public boolean isCustomDataExists() {
-        return customData != null;
+    public float getValueFloat() {
+        return valueFloat;
     }
 
-    public URVAbstractCustomData getCustomData() {
-        return customData;
+    public void setValueFloat(float valueFloat) {
+        this.valueFloat = valueFloat;
     }
 
-    public void setCustomData(URVAbstractCustomData customData) {
-        this.customData = customData;
+    public boolean isValueBool() {
+        return valueBool;
     }
 
-    public int getIndex() {
-        return index;
+    public void setValueBool(boolean valueBool) {
+        this.valueBool = valueBool;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public int getCustomBackgroundColor() {
+        return customBackgroundColor;
     }
 
-    public int getClickAction() {
-        return clickAction;
-    }
-
-    public void setClickAction(int clickAction) {
-        this.clickAction = clickAction;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setCustomBackgroundColor(int customBackgroundColor) {
+        this.customBackgroundColor = customBackgroundColor;
     }
 
     public boolean isCanSwipe() {
@@ -235,27 +339,19 @@ public class URVItem {
         this.canDrag = canDrag;
     }
 
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
-
-    public int getCustomBackgroundColor() {
-        return customBackgroundColor;
-    }
-
-    public void setCustomBackgroundColor(int customBackgroundColor) {
-        this.customBackgroundColor = customBackgroundColor;
-    }
-
     public int getItemMode() {
         return itemMode;
     }
 
     public void setItemMode(int itemMode) {
         this.itemMode = itemMode;
+    }
+
+    public URVAbstractCustomData getCustomData() {
+        return customData;
+    }
+
+    public void setCustomData(URVAbstractCustomData customData) {
+        this.customData = customData;
     }
 }

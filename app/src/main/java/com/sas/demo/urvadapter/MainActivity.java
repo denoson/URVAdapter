@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sas.urvadapter.AdapterTest;
 import com.sas.urvadapter.IURVEvents;
+import com.sas.urvadapter.IURVTabEvents;
 import com.sas.urvadapter.URVAdapter;
 import com.sas.urvadapter.URVItem;
+import com.sas.urvadapter.URVTabButtons;
 
 /**
  * Date: 2024.09.25
@@ -51,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         TextView lbl = findViewById(R.id.lbl);
         lbl.setText("Adapter " + adapter.getClass().getSimpleName() + " Version " + URVAdapter.VERSION);
+
+        initTabs();
     }
+
 
     private void fillDemoMessages() {
         URVItem item;
@@ -65,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
             item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
             item.Counter.setCounter(String.valueOf(i));
             item.Counter.setUnits("Items");
-
 
             i++;
         }
@@ -145,6 +149,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
+    URVTabButtons tabs;
+
+    private void initTabs() {
+        tabs = new URVTabButtons(getApplicationContext());
+        tabs.setupComponent(findViewById(R.id.pnlTabs), R.drawable.tab_normal, R.drawable.tab_active);
+
+        tabs.addTab("Color");
+        tabs.addTab("Model");
+        tabs.addTab("Date");
+        tabs.addTab("Time");
+        tabs.addTab("Widgets");
+        tabs.addTab("Plugins");
+        tabs.addTab("Gauges");
+        tabs.addTab("Servers");
+
+        tabs.events = new IURVTabEvents() {
+            @Override
+            public void onTabSelected(int index) {
+                URVItem rvi = tabs.items.get(index);
+                adapter.addItem(index, 0, rvi.getTitle(), rvi.getDescription(), null);
+                adapter.notifyDataSetChanged();
+            }
+        };
+
+        tabs.setActiveTabIndex(0);
+    }
+
+
 
     public String IntToHex(int value) {
         String hex = Integer.toHexString(value).toUpperCase();
