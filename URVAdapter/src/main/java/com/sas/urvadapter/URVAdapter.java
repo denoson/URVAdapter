@@ -34,6 +34,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public static final int VERSION = 1;
 
     public ArrayList<URVItem> items;
+    public ArrayList<URVItem> filterSrcItems;
     public IURVEvents events = null;
     public URVResources ResourceItems;
     public URVCounterResources ResourceCounter;
@@ -85,7 +86,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     private String iconCheckboxChecked = "L";
     private String iconCheckboxUnchecked = "M";
-
+    private boolean filtered = false;
 
 
     /**
@@ -93,6 +94,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
      */
     public URVAdapter() {
         items = new ArrayList<URVItem>();
+        filterSrcItems = new ArrayList<URVItem>();
+
         ResourceItems = new URVResources();
         ResourceCounter = new URVCounterResources();
     }
@@ -657,4 +660,64 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public int getLibColor(int index) {
         return COLORS_BCK[index];
     }
+
+
+
+    public boolean isFiltered() {
+        return filtered;
+    }
+
+
+    public void setFiltered(boolean useFilter, boolean useNotify) {
+        if(!useFilter) {
+            this.filtered = useFilter;
+            items.clear();
+            items.addAll(filterSrcItems);
+            filterSrcItems.clear();
+            if(useNotify) { notifyDataSetChanged(); }
+            return;
+        }
+
+        if(!this.filtered) {
+            filterSrcItems.clear();
+            filterSrcItems.addAll(items);
+            items.clear();
+            if(useNotify) { notifyDataSetChanged(); }
+        }
+
+        this.filtered = useFilter;
+    }
+
+
+    public void search(String text, boolean useTitle, boolean useDescr, boolean useKeywords,
+                                boolean useValueS, boolean useHint, boolean useInfo, boolean useNote) {
+        if(TextUtils.isEmpty(text)) {
+            setFiltered(false, true);
+            return;
+        }
+        setFiltered(true, false);
+        items.clear();
+        text = text.toUpperCase();
+
+        StringBuilder sbSearch = new StringBuilder();
+
+        for(URVItem item : filterSrcItems) {
+            sbSearch.setLength(0);
+            if(useTitle) sbSearch.append(item.getTitle()).append(" ");
+            if(useDescr) sbSearch.append(item.getDescription()).append(" ");
+            if(useKeywords) sbSearch.append(item.getKeywords()).append(" ");
+            if(useValueS) sbSearch.append(item.getValueString()).append(" ");
+            if(useHint) sbSearch.append(item.getHint()).append(" ");
+            if(useInfo) sbSearch.append(item.getInfo()).append(" ");
+            if(useNote) sbSearch.append(item.getNote()).append(" ");
+
+            boolean needShow = sbSearch.toString().toUpperCase().contains(text);
+            if(needShow) {
+                items.add(item);
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
 }

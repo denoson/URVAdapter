@@ -8,6 +8,15 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
+
+/**
+ * Date: 2024.09.30
+ * Author: Den Vigovski
+ * Universal RecycleView adapter
+ * Licence: This is an experimental project for educational purposes. Not for commercial use.
+ */
+
+
 public class URVTabButtons {
 
     public IURVTabEvents events = null;
@@ -25,7 +34,13 @@ public class URVTabButtons {
     private int textColorNormal = Color.LTGRAY;
     private int textColorActive = Color.WHITE;
 
+    private boolean needFormat = false;
 
+    /**
+     * Constructor
+     *
+     * @param ctx
+     */
     public URVTabButtons(Context ctx) {
         this.ctx = ctx;
         items = new ArrayList<URVItem>();
@@ -44,6 +59,7 @@ public class URVTabButtons {
     public URVItem addTab(String title) {
         URVItem tab = new URVItem(currentId, 0, title, "", new TabCustomData());
         addItemRaw(tab);
+        needFormat = true;
         return tab;
     }
 
@@ -52,14 +68,28 @@ public class URVTabButtons {
         item.setIndex(items.size());
         items.add(item);
         currentId++;
+    }
 
-        if(tabsPanel != null) {
+
+    public void format() {
+        if(tabsPanel == null) {
+            return;
+        }
+        tabsPanel.removeAllViews();
+
+        for(URVItem tab : items) {
+            TabCustomData tcd = (TabCustomData) tab.getCustomData();
+            if(tcd == null) {
+                tcd = new TabCustomData();
+                tab.setCustomData(tcd);
+            }
+
             Button btn = new Button(ctx);
-            if(idResNormal != 0) {
+            if (idResNormal != 0) {
                 btn.setBackgroundResource(idResNormal);
             }
-            btn.setText(item.getTitle());
-            btn.setTag(item.getIndex());
+            btn.setText(tab.getTitle());
+            btn.setTag(tab.getIndex());
 
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -69,13 +99,13 @@ public class URVTabButtons {
                 }
             });
 
-            TabCustomData tcd = (TabCustomData) item.getCustomData();
-            if(tcd != null) {
+            if (tcd != null) {
                 tcd.button = btn;
             }
 
             tabsPanel.addView(btn);
         }
+        needFormat = false;
     }
 
 
@@ -85,12 +115,16 @@ public class URVTabButtons {
 
 
     public void setActiveTabIndex(int activeTabIndex) {
+        if(needFormat) {
+            format();
+        }
         if(isValidIndex(activeTabIndex)) {
             this.activeTabIndex = activeTabIndex;
         } else {
             this.activeTabIndex = -1;
         }
         setActiveTab(this.activeTabIndex);
+
         if(events != null) {
             events.onTabSelected(this.activeTabIndex);
         }
@@ -118,6 +152,13 @@ public class URVTabButtons {
     }
 
 
+    public void setVisible(boolean visible) {
+        if(tabsPanel != null) {
+            tabsPanel.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+
     private int getResource(boolean active) {
         return active ? idResActive : idResNormal;
     }
@@ -126,6 +167,9 @@ public class URVTabButtons {
         return (index >= 0) && (index < items.size());
     }
 
+    public boolean isNeedFormat() {
+        return needFormat;
+    }
 
 
     private class TabCustomData extends URVAbstractCustomData {

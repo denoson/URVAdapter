@@ -3,6 +3,9 @@ package com.sas.demo.urvadapter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,6 +23,8 @@ import com.sas.urvadapter.URVAdapter;
 import com.sas.urvadapter.URVItem;
 import com.sas.urvadapter.URVTabButtons;
 
+import org.w3c.dom.Text;
+
 /**
  * Date: 2024.09.25
  * Author: Den Vigovski
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private URVAdapter adapter;
     private RecyclerView list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         lbl.setText("Adapter " + adapter.getClass().getSimpleName() + " Version " + URVAdapter.VERSION);
 
         initTabs();
+        initSearch();
     }
+
 
 
     private void fillDemoMessages() {
@@ -171,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(int index) {
                 URVItem rvi = tabs.items.get(index);
-                adapter.addItem(index, 0, rvi.getTitle(), rvi.getDescription(), null);
-                adapter.notifyDataSetChanged();
+                //adapter.addItem(index, 0, rvi.getTitle(), rvi.getDescription(), null);
+                //adapter.notifyDataSetChanged();
+                adapter.search(rvi.getTitle(), true, true, true, false, false, false, false);
             }
         };
 
@@ -180,6 +189,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+    private EditText edSearch = null;
+
+    private void initSearch() {
+        edSearch = findViewById(R.id.edSearch);
+        edSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                adapter.search(edSearch.getText().toString(), true, true, true, false, false, false, false);
+            }
+        });
+
+    }
 
     public String IntToHex(int value) {
         String hex = Integer.toHexString(value).toUpperCase();
