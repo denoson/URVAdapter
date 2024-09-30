@@ -159,6 +159,35 @@ public class URVTabButtons {
     }
 
 
+    public void updateTitles() {
+        for(URVItem tab : items) {
+            TabCustomData tcd = (TabCustomData) tab.getCustomData();
+            if(tcd != null) {
+                if(tcd.button != null) {
+                    tcd.button.setText(tab.getTitle());
+                }
+            }
+        }
+    }
+
+    public void updateTitle(int index, String title) {
+        if(!isValidIndex(index)) {
+            return;
+        }
+        URVItem tab = items.get(index);
+        tab.setTitle(title);
+
+        TabCustomData tcd = (TabCustomData) tab.getCustomData();
+        if (tcd != null) {
+            if (tcd.button != null) {
+                tcd.button.setText(tab.getTitle());
+            }
+        }
+    }
+
+
+
+
     private int getResource(boolean active) {
         return active ? idResActive : idResNormal;
     }
