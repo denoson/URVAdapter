@@ -3,6 +3,7 @@ package com.sas.urvadapter;
 public class URVItem {
 
     public URVCounterValue Counter;
+    public URVIcon Icon;
 
     private int index = -1;
     private long id;
@@ -27,7 +28,6 @@ public class URVItem {
     private boolean visible = true;
     private boolean enabled = true;
 
-    private String textIcon = "";
     private String title = "";
     private String description = "";
     private String keywords = "";
@@ -58,6 +58,7 @@ public class URVItem {
         this.description = description;
 
         Counter = new URVCounterValue();
+        Icon = new URVIcon();
 
         if(customData != null) {
             this.customData = customData;
@@ -225,14 +226,6 @@ public class URVItem {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public String getTextIcon() {
-        return textIcon;
-    }
-
-    public void setTextIcon(String textIcon) {
-        this.textIcon = textIcon;
     }
 
     public String getTitle() {

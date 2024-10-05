@@ -1,10 +1,6 @@
 package com.sas.urvadapter;
 
-public interface IURVEvents {
-
-    void onItemClick(int index);
-
-    void onLongClick(int index);
+public interface IURVTechEvents {
 
     boolean onAllowSelect(int index);
 
@@ -14,5 +10,4 @@ public interface IURVEvents {
 
     void onItemDrag(int index);
 
-    void onCommand(final String cmdBase, String userMessage);
 }

@@ -1,6 +1,7 @@
 package com.sas.urvadapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -35,7 +36,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public ArrayList<URVItem> items;
     public ArrayList<URVItem> filterSrcItems;
-    public IURVEvents events = null;
+
+    public IURVItemEvents eventsItem = null;
+    public IURVTechEvents eventsTech = null;
+    public IURVTerminalEvents eventsTerminal = null;
+
     public URVResources ResourceItems;
     public URVCounterResources ResourceCounter;
 
@@ -51,11 +56,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     private int resItemTitle = 0;
     private int resItemDescr = 0;
-    private int resItemImage = 0;
-    private int resItemTextIcon = 0;
     private int resItemPanelBck = 0;
     private int resItemStyleBck = 0;
 
+    private int resItemImgBck = 0;
+    private int resItemImgBitmap = 0;
+    private int resItemImgLabel = 0;
 
     private RecyclerView rView = null;
 
@@ -101,6 +107,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+    public URVItem addItem(int id, String title, String descr) {
+        URVItem newItem = new URVItem(id, 0, title, descr, null);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
     public URVItem addItem(int id, int viewType, String title, String descr, URVAbstractCustomData customData) {
         URVItem newItem = new URVItem(id, viewType, title, descr, customData);
         addItemRaw(newItem);
@@ -109,7 +121,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public URVItem addItemDefIcon(int id, int viewType, String txtIcon, String title, String descr, int act, int logic, int group, int marker, URVAbstractCustomData customData) {
         URVItem newItem = new URVItem(id, viewType, title, descr, customData);
-        newItem.setTextIcon(txtIcon);
+        newItem.Icon.setIconText(txtIcon);
         newItem.setAction(act);
         newItem.setLogic(logic);
         newItem.setGroup(group);
@@ -144,10 +156,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             case ITEM_MODE_CHECKBOX:
                 if(data.isChecked()) {
                     data.setCustomBackgroundColor(colorBckChecked);
-                    data.setTextIcon(iconCheckboxChecked);
+                    data.Icon.setIconText(iconCheckboxChecked);
                 } else {
                     data.setCustomBackgroundColor(colorBckUnchecked);
-                    data.setTextIcon(iconCheckboxUnchecked);
+                    data.Icon.setIconText(iconCheckboxUnchecked);
                 }
                 break;
 
@@ -171,12 +183,21 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             holder.getDescr().setText(data.getDescription());
         }
 
-        if (TextUtils.isEmpty(data.getTextIcon())) {
-            holder.getIconView().setVisibility(View.GONE);
-        } else {
-            holder.setTextIcon(data.getTextIcon());
-            holder.getIconView().setVisibility(View.VISIBLE);
+        switch (data.Icon.getIconType()) {
+
+            case URVIcon.ICON_TYPE_TEXT:
+                holder.setImageTextIcon(data.Icon.getIconText());
+                break;
+
+            case URVIcon.ICON_TYPE_BITMAP:
+                holder.setImageBitmap(data.Icon.getIconBitmap());
+                break;
+
+            default:
+                holder.setImageNone();
+                break;
         }
+
 
         if(ResourceCounter.isEnabled()) {
             holder.setCounterBoxVisible(data.Counter.isVisible());
@@ -201,25 +222,25 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     @Override
     public URViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(getIdResourceByType(viewType), parent, false);
-        if(isTextIcons() & (resItemTextIcon != 0)) {
-            TextView tIcon = v.findViewById(resItemTextIcon);
+        if(isTextIcons() & (resItemImgLabel != 0)) {
+            TextView tIcon = v.findViewById(resItemImgLabel);
             if(tIcon != null) {
                 tIcon.setTypeface(iconFont);
             }
         }
-        return new URViewHolder(v, events);
+        return new URViewHolder(v);
     }
 
 
     private void onItemClick(int index) {
-        if(events != null) {
-            events.onItemClick(index);
+        if(eventsItem != null) {
+            eventsItem.onItemClick(index);
         }
     }
 
     private void onItemLongClick(final int index) {
-        if (events != null) {
-            events.onLongClick(index);
+        if (eventsItem != null) {
+            eventsItem.onLongClick(index);
         }
     }
 
@@ -228,8 +249,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         if(isMultiselect()) {
             boolean allowSelect = true;
 
-            if(events != null) {
-                allowSelect = events.onAllowSelect(index);
+            if(eventsTech != null) {
+                allowSelect = eventsTech.onAllowSelect(index);
             }
 
             URVItem item = items.get(index);
@@ -241,8 +262,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
             notifyItemChanged(index);
 
-            if(events != null) {
-                events.onSelectionChanged();
+            if(eventsTech != null) {
+                eventsTech.onSelectionChanged();
             }
         }
     }
@@ -304,13 +325,17 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-    public void setupResourceHolders(int idTitle, int idDescr, int idImg, int idBck, int idTxtIcon, int idStyleBck) {
+    public void setupResourceHolders(int idTitle, int idDescr, int idBck, int idStyleBck) {
         resItemTitle = idTitle;
         resItemDescr = idDescr;
-        resItemImage = idImg;
         resItemPanelBck = idBck;
-        resItemTextIcon = idTxtIcon;
         resItemStyleBck = idStyleBck;
+    }
+
+    public void setupResourceImage(int idImgBck, int idImgBitmap, int idImgLabel) {
+        this.resItemImgBck = idImgBck;
+        this.resItemImgBitmap = idImgBitmap;
+        this.resItemImgLabel = idImgLabel;
     }
 
 
@@ -378,14 +403,13 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-
-
+    /**
+     * Holder Constructor
+     */
     public class URViewHolder extends RecyclerView.ViewHolder {
 
         private int index;
 
-        private final ImageView img;
-        private final TextView txtIcon;
         private final TextView title;
         private final TextView descr;
         private final FrameLayout panelBck;
@@ -395,8 +419,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         private final TextView counterValue;
         private final TextView counterUnits;
 
+        private final View imgBackground;
+        private final ImageView imgBitmap;
+        private final TextView imgLabel;
 
-        public URViewHolder(View v, final IURVEvents events) {
+
+        public URViewHolder(View v) {
             super(v);
 
             v.setOnClickListener(new View.OnClickListener() {
@@ -424,22 +452,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 techViewSetup(descr, true);
             } else descr = null;
 
-            if (resItemImage != 0) {
-                img = v.findViewById(resItemImage);
-                techViewSetup(img, true);
-            } else img = null;
-
-            if (resItemTextIcon != 0) {
-                txtIcon = v.findViewById(resItemTextIcon);
-                techViewSetup(txtIcon, true);
-                //txtIcon.setOnClickListener(new View.OnClickListener() {
-                //    @Override
-                //    public void onClick(View view) {
-                //        onSelectItem(getAdapterPosition());
-                //    }
-                //});
-            } else txtIcon = null;
-
             if (resItemStyleBck != 0) {
                 styleBck = v.findViewById(resItemStyleBck);
                 techViewSetup(styleBck, true);
@@ -451,7 +463,26 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             } else panelBck = null;
 
 
+            // Icon and Image ...........................................
+            if(resItemImgBck != 0) {
+                imgBackground = v.findViewById(resItemImgBck);
+                techViewSetup(imgBackground, true);
+            } else imgBackground = null;
 
+            if(resItemImgLabel != 0) {
+                imgLabel = v.findViewById(resItemImgLabel);
+                techViewSetup(imgLabel, true);
+            } else imgLabel = null;
+
+            if(resItemImgBitmap != 0) {
+                imgBitmap = v.findViewById(resItemImgBitmap);
+                techViewSetup(imgBitmap, true);
+            } else imgBitmap = null;
+
+
+
+
+            // Counter .................................................
             if (ResourceCounter.useBox()) {
                 counterPanel = v.findViewById(ResourceCounter.getBox());
                 techViewSetup(counterPanel, ResourceCounter.isEnabled());
@@ -467,8 +498,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 techViewSetup(counterUnits, ResourceCounter.isVisibleUnits());
             } else counterUnits = null;
 
-
-            setTextIconMode(isTextIcons());
         }
 
 
@@ -480,11 +509,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
 
 
-
-        public TextView getIconView() {
-            return txtIcon;
-        }
-        
         public TextView getTitle() {
             return title;
         }
@@ -514,20 +538,34 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
           }
         }
 
+
+
         public void setTextIcon(String txtIconValue) {
-            if(txtIcon != null) {
-                txtIcon.setText(txtIconValue);
+            if(imgLabel != null) {
+                imgLabel.setText(txtIconValue);
             }
         }
 
-        public void setTextIconMode(boolean textIcon) {
-            if(img != null) {
-                img.setVisibility(textIcon ? View.GONE : View.VISIBLE);
-            }
+        public void setImageNone() {
+            setViewVisible(imgBackground, false);
+            setViewVisible(imgBitmap, false);
+            setViewVisible(imgLabel, false);
+        }
 
-            if(txtIcon != null) {
-                txtIcon.setVisibility(textIcon ? View.VISIBLE : View.GONE);
-                txtIcon.setText(defaultTextIcon);
+        public void setImageTextIcon(String value) {
+            setViewVisible(imgBackground, true);
+            setViewVisible(imgBitmap, false);
+            setViewVisible(imgLabel, true);
+            setTextIcon(value);
+        }
+
+        public void setImageBitmap(Bitmap value) {
+            setViewVisible(imgBackground, true);
+            setViewVisible(imgBitmap, true);
+            setViewVisible(imgLabel, false);
+
+            if(imgBitmap != null) {
+                imgBitmap.setImageBitmap(value);
             }
         }
 
@@ -557,7 +595,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 v.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
         }
-    }
+    } // view holder end .....................................
+
 
     public int getColorSelected() {
         return colorSelected;
@@ -576,11 +615,13 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+
     public void scrollListToBottom() {
         if(rView != null) {
             rView.scrollToPosition(getItemCount() - 1);
         }
     }
+
 
 
     // ......................... MESSAGER .......................................
@@ -641,10 +682,9 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             scrollListToBottom();
         }
 
-        if(events != null) {
-            events.onCommand(getTerminalBase(), msg);
+        if(eventsTerminal != null) {
+            eventsTerminal.onCommand(getTerminalBase(), msg);
         }
-
     }
 
     public String getTerminalBase() {
@@ -720,4 +760,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void setupDefaultCheckbox(String iconChecked, String iconUnchecked) {
+        setupCheckbox(URVAdapter.COLORS_BCK[9], iconChecked,  URVAdapter.COLORS_BCK[17], iconUnchecked);
+    }
 }

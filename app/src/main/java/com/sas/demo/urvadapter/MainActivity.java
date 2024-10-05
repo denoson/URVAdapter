@@ -1,5 +1,7 @@
 package com.sas.demo.urvadapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -16,14 +18,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sas.urvadapter.AdapterTest;
-import com.sas.urvadapter.IURVEvents;
+import com.sas.urvadapter.IURVItemEvents;
 import com.sas.urvadapter.IURVTabEvents;
+import com.sas.urvadapter.IURVTechEvents;
+import com.sas.urvadapter.IURVTerminalEvents;
 import com.sas.urvadapter.URVAdapter;
 import com.sas.urvadapter.URVItem;
 import com.sas.urvadapter.URVTabButtons;
-
-import org.w3c.dom.Text;
 
 /**
  * Date: 2024.09.25
@@ -68,35 +69,48 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillDemoMessages() {
         URVItem item;
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img_demo);
+        adapter.clear();;
 
         int i = 0;
         for(int color : URVAdapter.COLORS_BCK) {
-            item = adapter.addItem(i, 0, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit " + i, null);
-            item.setTextIcon("X");
+            item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
+
             item.setCustomBackgroundColor(color);
 
             item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
             item.Counter.setCounter(String.valueOf(i));
             item.Counter.setUnits("Items");
 
+            if((i == 2) || (i == 5) || (i == 8) || (i == 13)) {
+                item.Icon.setIconBitmap(bmp);
+            } else {
+                item.Icon.setIconText("X");
+            }
+
+            adapter.notifyItemInserted(i);
             i++;
         }
 
-        adapter.notifyDataSetChanged();
+
+        //adapter.notifyDataSetChanged();
     }
+
 
 
     private void initAdapter() {
         list = findViewById(R.id.rvList);
         adapter = new URVAdapter();
         adapter.initRecyclerView(getApplicationContext(), list);
-        adapter.setupResourceHolders(R.id.title, R.id.descr, 0, R.id.bckPanel, R.id.txtIcon, R.id.msgbox);
+        adapter.setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
+        adapter.setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
         adapter.setupResourceItems(R.layout.item_msg_action, 0, 0, 0, 0);
         adapter.setMultiselect(true);
         adapter.setIconFont(Config.FONT_ICON);
         adapter.setTextIcons(true);
         adapter.setColorSelected(Color.rgb(00, 85, 255));
-        adapter.setupCheckbox(URVAdapter.COLORS_BCK[9], "L",  URVAdapter.COLORS_BCK[17], "M");
+        adapter.setupDefaultCheckbox("L", "M");
+
 
 
         // Counter
@@ -104,11 +118,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.ResourceCounter.setVisibleUnits(false);
         adapter.ResourceCounter.setEnabled(true);
 
-
-        // Terminal - messages functions .............................................
-        adapter.initTerminal(findViewById(R.id.edMessage), findViewById(R.id.btnSend), findViewById(R.id.lblTerminalBase));
-
-        adapter.events = new IURVEvents() {
+        adapter.eventsItem = new IURVItemEvents() {
             @Override
             public void onItemClick(int index) {
 
@@ -118,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
             public void onLongClick(int index) {
 
             }
+        };
 
+        adapter.eventsTech = new IURVTechEvents() {
             @Override
             public boolean onAllowSelect(int index) {
                 return false;
@@ -138,13 +150,18 @@ public class MainActivity extends AppCompatActivity {
             public void onItemDrag(int index) {
 
             }
+        };
 
+
+        // Terminal - messages functions .............................................
+        adapter.initTerminal(findViewById(R.id.edMessage), findViewById(R.id.btnSend), findViewById(R.id.lblTerminalBase));
+
+        adapter.eventsTerminal = new IURVTerminalEvents() {
             @Override
             public void onCommand(String cmdBase, String userMessage) {
 
             }
         };
-
     }
 
 
