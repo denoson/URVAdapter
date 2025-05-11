@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public static final int VERSION = 1;
 
+    public final URVProperties Properties;
     public ArrayList<URVItem> items;
     public ArrayList<URVItem> filterSrcItems;
 
@@ -94,6 +96,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     private String iconCheckboxUnchecked = "M";
     private boolean filtered = false;
 
+    private boolean gridMode = false;
+    private int gridRows = 0;
+    private int gridColumns = 0;
+
 
     /**
      * Constructor
@@ -104,6 +110,21 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         ResourceItems = new URVResources();
         ResourceCounter = new URVCounterResources();
+
+        Properties = new URVProperties();
+    }
+
+
+    public int getDefaultLayoutListItem() {
+        return gridMode ? R.layout.urv_grid_item : R.layout.urv_list_item;
+    }
+
+
+    public void initDefaultResources() {
+        setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
+        setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
+        setupResourceItems(getDefaultLayoutListItem(), 0, 0, 0, 0);
+        ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
     }
 
 
@@ -138,12 +159,37 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-    public void initRecyclerView(Context ctx, RecyclerView rList) {
+    public void initRecyclerView(Context ctx, RecyclerView rList, boolean useDefResources, int columns) {
         rView = rList;
-        rView.setLayoutManager(new LinearLayoutManager(ctx));
+        gridColumns = columns;
+        gridRows = 0;
+
+        if(columns > 1) {
+            gridMode = true;
+            rView.setLayoutManager(new URVGridLayoutManager(ctx, columns));
+        } else {
+            gridMode = false;
+            rView.setLayoutManager(new LinearLayoutManager(ctx));
+        }
+
         rView.setItemAnimator(new DefaultItemAnimator());
         rView.setAdapter(this);
+
+        if(useDefResources) initDefaultResources();
     }
+
+    public void setupGridRowsCols(Context ctx, int gRows, int gCols) {
+        if(gCols > 1) {
+            gridMode = true;
+            rView.setLayoutManager(new URVGridLayoutManager(ctx, gCols));
+            gridColumns = gCols;
+        } else {
+            gridMode = false;
+            rView.setLayoutManager(new LinearLayoutManager(ctx));
+        }
+        gridRows = gRows;
+    }
+
 
 
     @Override
@@ -153,6 +199,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         holder.updateSelection(data.isSelected());
 
         switch (data.getItemMode()) {
+
             case ITEM_MODE_CHECKBOX:
                 if(data.isChecked()) {
                     data.setCustomBackgroundColor(colorBckChecked);
@@ -169,19 +216,32 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 break;
         }
 
-        if (TextUtils.isEmpty(data.getTitle())) {
-            holder.getTitle().setVisibility(View.GONE);
-        } else {
-            holder.getTitle().setVisibility(View.VISIBLE);
-            holder.getTitle().setText(data.getTitle());
-        }
+        int currVisible;
+        holder.getTitle().setText(data.getTitle());
 
-        if (TextUtils.isEmpty(data.getDescription())) {
-            holder.getDescr().setVisibility(View.GONE);
-        } else {
-            holder.getDescr().setVisibility(View.VISIBLE);
-            holder.getDescr().setText(data.getDescription());
-        }
+        if(Properties.isTitleVisible()) {
+            if(Properties.isAutoHideEmpty()) {
+                currVisible = TextUtils.isEmpty(data.getTitle()) ? View.GONE : View.VISIBLE;
+            } else currVisible = View.VISIBLE;
+        } else  currVisible = View.GONE;
+        holder.getTitle().setVisibility(currVisible);
+
+
+        holder.getDescr().setText(data.getDescription());
+        if(Properties.isDescrVisible()) {
+            if(Properties.isAutoHideEmpty()) {
+                currVisible = TextUtils.isEmpty(data.getDescription()) ? View.GONE : View.VISIBLE;
+            } else currVisible = View.VISIBLE;
+        } else  currVisible = View.GONE;
+        holder.getDescr().setVisibility(currVisible);
+
+
+//        if (TextUtils.isEmpty(data.getDescription())) {
+//            holder.getDescr().setVisibility(View.GONE);
+//        } else {
+//            holder.getDescr().setVisibility(View.VISIBLE);
+//            holder.getDescr().setText(data.getDescription());
+//        }
 
         switch (data.Icon.getIconType()) {
 
@@ -214,7 +274,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 background.setTint(data.getCustomBackgroundColor());
             }
         }
-
     }
 
 
@@ -228,6 +287,13 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 tIcon.setTypeface(iconFont);
             }
         }
+
+        if(gridMode && (gridRows > 0)) {
+            GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+            lp.height = parent.getMeasuredHeight() / gridRows;
+            v.setLayoutParams(lp);
+        }
+
         return new URViewHolder(v);
     }
 
@@ -762,5 +828,37 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public void setupDefaultCheckbox(String iconChecked, String iconUnchecked) {
         setupCheckbox(URVAdapter.COLORS_BCK[9], iconChecked,  URVAdapter.COLORS_BCK[17], iconUnchecked);
+    }
+
+    public boolean isGridMode() {
+        return gridMode;
+    }
+
+    public int getGridRows() {
+        return gridRows;
+    }
+
+    public int getGridColumns() {
+        return gridColumns;
+    }
+
+    public int getRandomNum(int nFrom, int nTo) {
+        return (int) Math.round( Math.random() * (nTo-1) + nFrom);
+    }
+
+
+    public int HexToColor(String hexColor, int defColor) {
+        if(TextUtils.isEmpty(hexColor)) return defColor;
+        try {
+            return Color.parseColor(hexColor);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Color.GRAY;
+        }
+    }
+
+
+    public String colorToHex(int color) {
+        return String.format("#%06X", (0xFFFFFF & color));
     }
 }

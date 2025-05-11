@@ -5,8 +5,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         initResources();
         initAdapter();
-
         fillDemoMessages();
 
         TextView lbl = findViewById(R.id.lbl);
@@ -66,45 +67,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    private void fillDemoMessages() {
-        URVItem item;
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img_demo);
-        adapter.clear();;
-
-        int i = 0;
-        for(int color : URVAdapter.COLORS_BCK) {
-            item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
-
-            item.setCustomBackgroundColor(color);
-
-            item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
-            item.Counter.setCounter(String.valueOf(i));
-            item.Counter.setUnits("Items");
-
-            if((i == 2) || (i == 5) || (i == 8) || (i == 13)) {
-                item.Icon.setIconBitmap(bmp);
-            } else {
-                item.Icon.setIconText("X");
-            }
-
-            adapter.notifyItemInserted(i);
-            i++;
-        }
-
-
-        //adapter.notifyDataSetChanged();
-    }
-
-
-
     private void initAdapter() {
         list = findViewById(R.id.rvList);
         adapter = new URVAdapter();
-        adapter.initRecyclerView(getApplicationContext(), list);
-        adapter.setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
-        adapter.setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
-        adapter.setupResourceItems(R.layout.item_msg_action, 0, 0, 0, 0);
+        adapter.initRecyclerView(getApplicationContext(), list, true, 3);
+
+        // if use custom resources:
+        //adapter.setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
+        //adapter.setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
+        //adapter.setupResourceItems(R.layout.item_msg_action, 0, 0, 0, 0);
         adapter.setMultiselect(true);
         adapter.setIconFont(Config.FONT_ICON);
         adapter.setTextIcons(true);
@@ -112,9 +83,8 @@ public class MainActivity extends AppCompatActivity {
         adapter.setupDefaultCheckbox("L", "M");
 
 
-
         // Counter
-        adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
+        //adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
         adapter.ResourceCounter.setVisibleUnits(false);
         adapter.ResourceCounter.setEnabled(true);
 
@@ -165,6 +135,69 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void fillDemoMessages() {
+        toLog("fillDemoMessages");
+        URVItem item;
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img_demo);
+        adapter.clear();
+        adapter.setupGridRowsCols(getApplicationContext(),  adapter.getRandomNum(2, 6), adapter.getRandomNum(1, 6));
+        adapter.Properties.setAutoHideEmpty(false);
+        adapter.Properties.setTitleVisible(false);
+        adapter.Properties.setDescrVisible(false);
+
+        int[] arrImages = { R.drawable.img01, R.drawable.img02, R.drawable.img03, R.drawable.img04, R.drawable.img05, R.drawable.img06,
+                R.drawable.img07, R.drawable.img08, R.drawable.img09 };
+
+        int i = 0;
+        for(int color : URVAdapter.COLORS_BCK) {
+
+            if(adapter.isGridMode()) {
+                item = adapter.addItem(i, "Photo-" + i, "Photo description color");
+                item.Icon.setIconBitmap(BitmapFactory.decodeResource(getResources(), arrImages[adapter.getRandomNum(0, arrImages.length)]));
+                toLog("add grid item: " + item.getTitle());
+
+            } else {
+                item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
+                item.setCustomBackgroundColor(color);
+                //item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
+                //item.Counter.setCounter(String.valueOf(i));
+                //item.Counter.setUnits("Items");
+
+                if ((i == 2) || (i == 5) || (i == 8) || (i == 13)) {
+                    item.Icon.setIconBitmap(bmp);
+                } else {
+                    item.Icon.setIconText("X");
+                }
+
+                toLog("add list item: " + item.getTitle());
+            }
+
+            adapter.notifyItemInserted(i);
+            i++;
+        }
+
+        adapter.notifyDataSetChanged();
+
+        toLog("total items: " + adapter.items.size());
+    }
+
+
+
+    private void startRandomDesign(int quantity) {
+        new CountDownTimer(quantity * 2000, 2000) {
+            public void onTick(long millisUntilFinished) {
+               // mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                fillDemoMessages();
+            }
+            public void onFinish() {
+               // mTextField.setText("done!");
+                toLog("random Complete");
+            }
+        }.start();
+    }
+
+
+
     private void initResources() {
         if (Config.FONT_ICON == null) {
             try {
@@ -201,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
                 adapter.search(rvi.getTitle(), true, true, true, false, false, false, false);
             }
         };
-
         tabs.setActiveTabIndex(0);
     }
 
@@ -231,5 +263,15 @@ public class MainActivity extends AppCompatActivity {
     public String IntToHex(int value) {
         String hex = Integer.toHexString(value).toUpperCase();
         return ((value < 16) ? "0" : "") + hex;
+    }
+
+    private void toLog(String info) {
+        Log.d(getClass().getSimpleName(), info);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startRandomDesign(100);
     }
 }
