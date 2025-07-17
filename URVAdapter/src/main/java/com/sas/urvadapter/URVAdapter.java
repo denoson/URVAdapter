@@ -1,11 +1,16 @@
 package com.sas.urvadapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +39,9 @@ import java.util.ArrayList;
 public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     public static final int VERSION = 1;
+    public final String LOGTAG = "URVAdapter";
 
-    public final URVProperties Properties;
+    public final URVProperties Properties; // visible for title, descr, autohide
     public ArrayList<URVItem> items;
     public ArrayList<URVItem> filterSrcItems;
 
@@ -43,8 +49,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public IURVTechEvents eventsTech = null;
     public IURVTerminalEvents eventsTerminal = null;
 
-    public URVResources ResourceItems;
-    public URVCounterResources ResourceCounter;
+    public URVResources ResourceItems;  // resources id00 .. id09
+    public URVCounterResources ResourceCounter; // enabled, id: box, counter, unit
+
+    public final ArrayList<URVClickItem> itemsClicker;
+    public final ArrayList<URVItemElement> itemsElements;
+
 
     public static final int[] COLORS_BCK = {
             0xFFB71C1C, 0xFF880E4F, 0xFF4A148C, 0xFF311B92, 0xFF1A237E,
@@ -53,11 +63,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             0xFFBF360C, 0xFF3E2723, 0xFF212121, 0xFF263238
     };
 
+
     public static final int ITEM_MODE_NORMAL = 0;
     public static final int ITEM_MODE_CHECKBOX = 1;
 
-    private int resItemTitle = 0;
-    private int resItemDescr = 0;
     private int resItemPanelBck = 0;
     private int resItemStyleBck = 0;
 
@@ -100,6 +109,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     private int gridRows = 0;
     private int gridColumns = 0;
 
+    private int cornerRadius = 6;
+
 
     /**
      * Constructor
@@ -107,6 +118,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public URVAdapter() {
         items = new ArrayList<URVItem>();
         filterSrcItems = new ArrayList<URVItem>();
+        itemsClicker = new ArrayList<URVClickItem>();
+        itemsElements = new ArrayList<URVItemElement>();
 
         ResourceItems = new URVResources();
         ResourceCounter = new URVCounterResources();
@@ -115,13 +128,105 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+
+
+    // new functions
+    public void initList001() {
+        ResourceItems.setId00(R.layout.urv_list_item_001);
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+
+    }
+
+    public void initList002() {
+        ResourceItems.setId00(R.layout.urv_list_item_002);
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lblCounterUnits, URVConst.Logic.COUNTER_UNITS, URVConst.ElementType.TEXT_LABEL);
+    }
+
+
+    public void initList003() {
+        resItemStyleBck = R.id.pnlColor;
+        ResourceItems.setId00(R.layout.urv_list_item_003);
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+    }
+
+
+    public void initList004() {
+        ResourceItems.setId00(R.layout.urv_list_item_004);
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.lbl11, URVConst.Logic.COL1_VALUE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lbl12, URVConst.Logic.COL1_LABEL, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lbl21, URVConst.Logic.COL2_VALUE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lbl22, URVConst.Logic.COL2_LABEL, URVConst.ElementType.TEXT_LABEL);
+
+        addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON); // flash icon
+        addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON); // delete icon
+        addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON); // delete icon
+
+        addClickItem(R.id.col1, 1);
+        addClickItem(R.id.col2, 2);
+        addClickItem(R.id.col3, 3);
+        addClickItem(R.id.col4, 4);
+        addClickItem(R.id.col5, 5);
+    }
+
+
+    public void addItemElement(int idResource, int id, int idType) {
+        URVItemElement el = new URVItemElement(idResource, id, idType);
+        itemsElements.add(el);
+    }
+
+
+    private String getLogicText(int logic, URVItem item) {
+        switch (logic) {
+            case URVConst.Logic.TITLE: return item.getTitle();
+            case URVConst.Logic.DESCR: return item.getDescription();
+            case URVConst.Logic.COUNTER_VALUE: return item.Counter.getCounter();
+            case URVConst.Logic.COUNTER_UNITS: return item.Counter.getUnits();
+
+            case URVConst.Logic.COL1_LABEL: return item.getColumn1L();
+            case URVConst.Logic.COL1_VALUE: return item.getColumn1V();
+
+            case URVConst.Logic.COL2_LABEL: return item.getColumn2L();
+            case URVConst.Logic.COL2_VALUE: return item.getColumn2V();
+
+            case URVConst.Logic.COL3_LABEL: return item.getColumn3L();
+            case URVConst.Logic.COL3_VALUE: return item.getColumn3V();
+
+            case URVConst.Logic.COL4_LABEL: return item.getColumn4L();
+            case URVConst.Logic.COL4_VALUE: return item.getColumn4V();
+
+            case URVConst.Logic.ICON_A: return item.getTextIconA();
+            case URVConst.Logic.ICON_B: return item.getTextIconB();
+            case URVConst.Logic.ICON_C: return item.getTextIconC();
+
+            default: return "";
+        }
+    }
+    // new functions
+
+
+
+
+
     public int getDefaultLayoutListItem() {
         return gridMode ? R.layout.urv_grid_item : R.layout.urv_list_item;
     }
 
 
     public void initDefaultResources() {
-        setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
+        setupResourceHolders(R.id.bckPanel, R.id.msgbox);
         setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
         setupResourceItems(getDefaultLayoutListItem(), 0, 0, 0, 0);
         ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
@@ -178,6 +283,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         if(useDefResources) initDefaultResources();
     }
 
+
     public void setupGridRowsCols(Context ctx, int gRows, int gCols) {
         if(gCols > 1) {
             gridMode = true;
@@ -195,7 +301,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull URViewHolder holder, int position) {
         URVItem data = items.get(position);
-
         holder.updateSelection(data.isSelected());
 
         switch (data.getItemMode()) {
@@ -211,37 +316,15 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 break;
 
             default:
-                //data.setCustomBackgroundColor();
-                //data.setTextIcon(iconCheckboxChecked);
                 break;
         }
 
         int currVisible;
-        holder.getTitle().setText(data.getTitle());
 
-        if(Properties.isTitleVisible()) {
-            if(Properties.isAutoHideEmpty()) {
-                currVisible = TextUtils.isEmpty(data.getTitle()) ? View.GONE : View.VISIBLE;
-            } else currVisible = View.VISIBLE;
-        } else  currVisible = View.GONE;
-        holder.getTitle().setVisibility(currVisible);
+        for(TextView tvi : holder.holderTextViews) {
+           tvi.setText(getLogicText((int) tvi.getTag(), data));
+        }
 
-
-        holder.getDescr().setText(data.getDescription());
-        if(Properties.isDescrVisible()) {
-            if(Properties.isAutoHideEmpty()) {
-                currVisible = TextUtils.isEmpty(data.getDescription()) ? View.GONE : View.VISIBLE;
-            } else currVisible = View.VISIBLE;
-        } else  currVisible = View.GONE;
-        holder.getDescr().setVisibility(currVisible);
-
-
-//        if (TextUtils.isEmpty(data.getDescription())) {
-//            holder.getDescr().setVisibility(View.GONE);
-//        } else {
-//            holder.getDescr().setVisibility(View.VISIBLE);
-//            holder.getDescr().setText(data.getDescription());
-//        }
 
         switch (data.Icon.getIconType()) {
 
@@ -258,21 +341,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 break;
         }
 
-
-        if(ResourceCounter.isEnabled()) {
-            holder.setCounterBoxVisible(data.Counter.isVisible());
-            holder.setCounter(data.Counter.getCounter());
-            holder.setCounterUnits(data.Counter.getUnits());
-        }
-
-
         if (holder.getStyleBck() != null) {
-            Drawable background = holder.getStyleBck().getBackground();
-            if (data.getCustomBackgroundColor() == 0) {
-                background.setTintList(null);
-            } else {
-                background.setTint(data.getCustomBackgroundColor());
-            }
+            setViewBackgroundColor(holder.getStyleBck(), dpToPx(cornerRadius),
+                    data.getCustomBackgroundColor() == 0 ? Color.TRANSPARENT : data.getCustomBackgroundColor());
+            // old way
+            //Drawable background = holder.getStyleBck().getBackground();
+            //background.setTint(data.getCustomBackgroundColor());
         }
     }
 
@@ -281,11 +355,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     @Override
     public URViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(getIdResourceByType(viewType), parent, false);
+
         if(isTextIcons() & (resItemImgLabel != 0)) {
             TextView tIcon = v.findViewById(resItemImgLabel);
-            if(tIcon != null) {
-                tIcon.setTypeface(iconFont);
-            }
+            if(tIcon != null) tIcon.setTypeface(iconFont);
         }
 
         if(gridMode && (gridRows > 0)) {
@@ -299,15 +372,21 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
     private void onItemClick(int index) {
+        Log.d(LOGTAG, String.format("onItemClick index: %d", index));
         if(eventsItem != null) {
             eventsItem.onItemClick(index);
         }
     }
 
     private void onItemLongClick(final int index) {
+        Log.d(LOGTAG, String.format("onItemLongClick index: %d", index));
         if (eventsItem != null) {
             eventsItem.onLongClick(index);
         }
+    }
+
+    private void onItemClickEx(int index, int id) {
+        Log.d(LOGTAG, String.format("onItemClickEx index: %d, id: %d", index, id));
     }
 
 
@@ -391,9 +470,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-    public void setupResourceHolders(int idTitle, int idDescr, int idBck, int idStyleBck) {
-        resItemTitle = idTitle;
-        resItemDescr = idDescr;
+    public void setupResourceHolders(int idBck, int idStyleBck) {
         resItemPanelBck = idBck;
         resItemStyleBck = idStyleBck;
     }
@@ -476,47 +553,21 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         private int index;
 
-        private final TextView title;
-        private final TextView descr;
         private final FrameLayout panelBck;
         private final View styleBck;
-
-        private final View counterPanel;
-        private final TextView counterValue;
-        private final TextView counterUnits;
 
         private final View imgBackground;
         private final ImageView imgBitmap;
         private final TextView imgLabel;
 
+        private final ArrayList<View> holderClickerItems;
+        private final ArrayList<TextView> holderTextViews;
+
 
         public URViewHolder(View v) {
             super(v);
-
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClick(getAdapterPosition());
-                }
-            });
-
-            v.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    onItemLongClick(getAdapterPosition());
-                    return true;
-                }
-            });
-
-            if (resItemTitle != 0) {
-                title = v.findViewById(resItemTitle);
-                techViewSetup(title, true);
-            } else title = null;
-
-            if (resItemDescr != 0) {
-                descr = v.findViewById(resItemDescr);
-                techViewSetup(descr, true);
-            } else descr = null;
+            holderClickerItems = new ArrayList<View>();
+            holderTextViews = new ArrayList<TextView>();
 
             if (resItemStyleBck != 0) {
                 styleBck = v.findViewById(resItemStyleBck);
@@ -546,24 +597,73 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             } else imgBitmap = null;
 
 
+            if(itemsClicker.isEmpty()) {
+                // Use default click/long click mode
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onItemClick(getAdapterPosition());
+                    }
+                });
 
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        onItemLongClick(getAdapterPosition());
+                        return true;
+                    }
+                });
+            } else {
+                // Scan all click elements
+                // Use custom clickers
+                //Log.d(LOGTAG, "clickItems count: " + clickItems.size());
 
-            // Counter .................................................
-            if (ResourceCounter.useBox()) {
-                counterPanel = v.findViewById(ResourceCounter.getBox());
-                techViewSetup(counterPanel, ResourceCounter.isEnabled());
-            } else counterPanel = null;
+                v.setBackground(null);
 
-            if (ResourceCounter.useCounter()) {
-                counterValue = v.findViewById(ResourceCounter.getCounter());
-                techViewSetup(counterValue, true);
-            } else counterValue = null;
+                for(URVClickItem clickItem : itemsClicker) {
+                    View clickView = v.findViewById(clickItem.getIdView());
+                    if(clickView != null) {
+                        //Log.d(LOGTAG, " > set clicked: : " + clickItem.getId());
+                        clickView.setTag(clickItem.getId());
+                        applyEffect(clickView, Color.argb(60, 9, 9, 9));
+                        holderClickerItems.add(clickView);
+                        clickView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onItemClickEx(getAdapterPosition(), (int) v.getTag());
+                            }
+                        });
+                    }
+                }
+            }
 
-            if (ResourceCounter.useUnits()) {
-                counterUnits = v.findViewById(ResourceCounter.getUnits());
-                techViewSetup(counterUnits, ResourceCounter.isVisibleUnits());
-            } else counterUnits = null;
+            if(!itemsElements.isEmpty()) {
+                for(URVItemElement customItem : itemsElements) {
+                    switch (customItem.getValueType()) {
 
+                        case URVConst.ElementType.TEXT_LABEL:
+                            TextView tvi = v.findViewById(customItem.getIdView());
+                            if(tvi != null) {
+                                tvi.setTag(customItem.getLogic());
+                                holderTextViews.add(tvi);
+                            }
+                            break;
+
+                        case URVConst.ElementType.TEXT_ICON:
+                            tvi = v.findViewById(customItem.getIdView());
+                            if(tvi != null) {
+                                tvi.setTag(customItem.getLogic());
+                                tvi.setTypeface(getIconFont());
+                                holderTextViews.add(tvi);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                Log.d(LOGTAG, "create holder with itemsElements: " + itemsElements.size() + ", holder: " + holderTextViews.size());
+            }
         }
 
 
@@ -572,15 +672,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 v.setClickable(false);
                 v.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
             }
-        }
-
-
-        public TextView getTitle() {
-            return title;
-        }
-
-        public TextView getDescr() {
-            return descr;
         }
 
         public View getStyleBck() { return styleBck; }
@@ -603,8 +694,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
               panelBck.setBackgroundColor(colorNormal);
           }
         }
-
-
 
         public void setTextIcon(String txtIconValue) {
             if(imgLabel != null) {
@@ -636,30 +725,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
 
 
-
-        public void setCounterBoxVisible(boolean visible) {
-            setViewVisible(counterPanel, visible);
-        }
-
-        public String getCounter() {
-            return counterValue.getText().toString();
-        }
-        public void setCounter(String value) {
-            counterValue.setText(value);
-        }
-
-        public String getCounterUnits() {
-            return counterUnits.getText().toString();
-        }
-        public void setCounterUnits(String value) {
-            counterUnits.setText(value);
-        }
-
-
         private void setViewVisible(View v, boolean visible) {
-            if(v != null) {
-                v.setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
+          if(v != null) v.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     } // view holder end .....................................
 
@@ -679,8 +746,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public void setColorNormal(int colorNormal) {
         this.colorNormal = colorNormal;
     }
-
-
 
     public void scrollListToBottom() {
         if(rView != null) {
@@ -857,8 +922,76 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
     }
 
+    public int getCornerRadius() {
+        return cornerRadius;
+    }
+
+    public void setCornerRadius(int cornerRadius) {
+        this.cornerRadius = cornerRadius;
+    }
 
     public String colorToHex(int color) {
         return String.format("#%06X", (0xFFFFFF & color));
+    }
+
+
+    public URVClickItem addClickItem(int idView, int id) {
+        URVClickItem ci = new URVClickItem(idView, id);
+        itemsClicker.add(ci);
+        return ci;
+    }
+
+    public URVItemElement addCustomItem(int idView, int id, int valueType) {
+        URVItemElement ci = new URVItemElement(idView, id, valueType);
+        itemsElements.add(ci);
+        return ci;
+    }
+
+    private void applyEffect(View view, int defColor) {
+        // Создаем нормальный фон
+        view.setClickable(true);
+        GradientDrawable normalState = new GradientDrawable();
+        normalState.setShape(GradientDrawable.RECTANGLE);
+        normalState.setCornerRadius(dpToPx(cornerRadius));
+        normalState.setColor(defColor); // Color.parseColor("#222324")
+
+        // Создаем ripple-эффект
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ColorStateList colorStateList = ColorStateList.valueOf(Color.DKGRAY);
+            RippleDrawable rippleDrawable = new RippleDrawable(
+                    colorStateList,
+                    normalState,
+                    null // маска (если null, используется основной drawable как маска)
+            );
+            view.setBackground(rippleDrawable);
+        } else {
+            // Fallback для старых версий (как в примере 1)
+            StateListDrawable selector = new StateListDrawable();
+            GradientDrawable pressedState = new GradientDrawable();
+            pressedState.setShape(GradientDrawable.RECTANGLE);
+            pressedState.setCornerRadius(dpToPx(cornerRadius));
+            pressedState.setColor(Color.LTGRAY);
+
+            selector.addState(new int[]{android.R.attr.state_pressed}, pressedState);
+            selector.addState(new int[]{}, normalState);
+            view.setBackgroundDrawable(selector);
+        }
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * rView.getContext().getResources().getDisplayMetrics().density);
+    }
+
+    public void setViewBackgroundColor(View v, int radius, int color) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.RECTANGLE);
+        shape.setCornerRadius(radius); // радиус закругления в пикселях
+        shape.setColor(color); // цвет фона (оранжевый)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            v.setBackground(shape);
+        } else {
+            v.setBackgroundDrawable(shape);
+        }
     }
 }

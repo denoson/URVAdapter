@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "URVAdapter Demo"
+rootProject.name = "URVAdapter Total"
 include(":app")
 include(":URVAdapter")
