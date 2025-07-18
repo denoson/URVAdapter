@@ -94,6 +94,11 @@ public class DemoListActivity extends AppCompatActivity {
             public void onLongClick(int index) {
 
             }
+
+            @Override
+            public void onClickEx(int index, int id) {
+
+            }
         };
 
         adapter.eventsTech = new IURVTechEvents() {

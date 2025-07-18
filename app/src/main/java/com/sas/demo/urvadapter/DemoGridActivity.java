@@ -38,19 +38,16 @@ public class DemoGridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_demo_grid);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-
         initResources();
         initAdapter();
         fillDemoMessages();
-
-        TextView lbl = findViewById(R.id.lbl);
-        lbl.setText("Adapter " + adapter.getClass().getSimpleName() + " Version " + URVAdapter.VERSION);
 
         initTabs();
         initSearch();
@@ -62,21 +59,12 @@ public class DemoGridActivity extends AppCompatActivity {
         adapter = new URVAdapter();
         adapter.initRecyclerView(getApplicationContext(), list, true, 3);
 
-        // if use custom resources:
-        //adapter.setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
-        //adapter.setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
-        //adapter.setupResourceItems(R.layout.item_msg_action, 0, 0, 0, 0);
         adapter.setMultiselect(true);
         adapter.setIconFont(Config.FONT_ICON);
         adapter.setTextIcons(true);
         adapter.setColorSelected(Color.rgb(00, 85, 255));
         adapter.setupDefaultCheckbox("L", "M");
 
-
-        // Counter
-        //adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
-        adapter.ResourceCounter.setVisibleUnits(false);
-        adapter.ResourceCounter.setEnabled(true);
 
         adapter.eventsItem = new IURVItemEvents() {
             @Override
@@ -86,6 +74,11 @@ public class DemoGridActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(int index) {
+
+            }
+
+            @Override
+            public void onClickEx(int index, int id) {
 
             }
         };
@@ -111,17 +104,6 @@ public class DemoGridActivity extends AppCompatActivity {
 
             }
         };
-
-
-        // Terminal - messages functions .............................................
-        adapter.initTerminal(findViewById(R.id.edMessage), findViewById(R.id.btnSend), findViewById(R.id.lblTerminalBase));
-
-        adapter.eventsTerminal = new IURVTerminalEvents() {
-            @Override
-            public void onCommand(String cmdBase, String userMessage) {
-
-            }
-        };
     }
 
 
@@ -129,41 +111,22 @@ public class DemoGridActivity extends AppCompatActivity {
         toLog("fillDemoMessages");
         URVItem item;
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img_demo);
+
         adapter.clear();
-        adapter.setupGridRowsCols(getApplicationContext(),  adapter.getRandomNum(2, 6), adapter.getRandomNum(1, 6));
-        adapter.Properties.setAutoHideEmpty(false);
-        adapter.Properties.setTitleVisible(false);
-        adapter.Properties.setDescrVisible(false);
+        adapter.setupGridRowsCols(getApplicationContext(), 2, 6); //adapter.setupGridRowsCols(getApplicationContext(),  adapter.getRandomNum(2, 6), adapter.getRandomNum(1, 6));
+        adapter.Properties.setAutoHideEmpty(true);
 
         int[] arrImages = { R.drawable.img01, R.drawable.img02, R.drawable.img03, R.drawable.img04, R.drawable.img05, R.drawable.img06,
                 R.drawable.img07, R.drawable.img08, R.drawable.img09 };
 
-        int i = 0;
-        for(int color : URVAdapter.COLORS_BCK) {
+        for(int i=0; i < 50; i++) {
+            item = adapter.addItem(i, "Photo-" + i, "Photo description color");
+            item.Icon.setIconBitmap(BitmapFactory.decodeResource(getResources(), arrImages[adapter.getRandomNum(0, arrImages.length)]));
 
-            if(adapter.isGridMode()) {
-                item = adapter.addItem(i, "Photo-" + i, "Photo description color");
-                item.Icon.setIconBitmap(BitmapFactory.decodeResource(getResources(), arrImages[adapter.getRandomNum(0, arrImages.length)]));
-                toLog("add grid item: " + item.getTitle());
+            if(i < 15) item.setDescription("");
+            if(i < 10) item.setTitle("");
 
-            } else {
-                item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
-                item.setCustomBackgroundColor(color);
-                //item.Counter.setVisible((i == 3) || (i == 5) || (i == 10));
-                //item.Counter.setCounter(String.valueOf(i));
-                //item.Counter.setUnits("Items");
-
-                if ((i == 2) || (i == 5) || (i == 8) || (i == 13)) {
-                    item.Icon.setIconBitmap(bmp);
-                } else {
-                    item.Icon.setIconText("X");
-                }
-
-                toLog("add list item: " + item.getTitle());
-            }
-
-            adapter.notifyItemInserted(i);
-            i++;
+            toLog("add grid item: " + item.getTitle());
         }
 
         adapter.notifyDataSetChanged();
@@ -218,7 +181,8 @@ public class DemoGridActivity extends AppCompatActivity {
                 URVItem rvi = tabs.items.get(index);
                 //adapter.addItem(index, 0, rvi.getTitle(), rvi.getDescription(), null);
                 //adapter.notifyDataSetChanged();
-                adapter.search(rvi.getTitle(), true, true, true, false, false, false, false);
+                //adapter.search(rvi.getTitle(), true, true, true, false, false, false, false);
+                fillDemoMessages();
             }
         };
         tabs.setActiveTabIndex(0);
@@ -244,7 +208,6 @@ public class DemoGridActivity extends AppCompatActivity {
                 adapter.search(edSearch.getText().toString(), true, true, true, false, false, false, false);
             }
         });
-
     }
 
     public String IntToHex(int value) {

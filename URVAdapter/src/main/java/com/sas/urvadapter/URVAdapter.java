@@ -294,6 +294,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             rView.setLayoutManager(new LinearLayoutManager(ctx));
         }
         gridRows = gRows;
+
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
     }
 
 
@@ -319,10 +324,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 break;
         }
 
-        int currVisible;
-
         for(TextView tvi : holder.holderTextViews) {
-           tvi.setText(getLogicText((int) tvi.getTag(), data));
+           String txt = getLogicText((int) tvi.getTag(), data);
+           if(Properties.isAutoHideEmpty()) {
+              tvi.setVisibility(TextUtils.isEmpty(txt) ? View.GONE : View.VISIBLE);
+           }
+           tvi.setText(txt);
         }
 
 
@@ -387,6 +394,9 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     private void onItemClickEx(int index, int id) {
         Log.d(LOGTAG, String.format("onItemClickEx index: %d, id: %d", index, id));
+        if (eventsItem != null) {
+            eventsItem.onClickEx(index, id);
+        }
     }
 
 
