@@ -50,7 +50,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "denoson"
             artifactId = "URVAdapter"
-            version = "1.0.A"
+            version = "1.1.0"
             afterEvaluate { from(components["release"]) }
         }
     }
