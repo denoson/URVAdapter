@@ -26,6 +26,9 @@ public class URVConst {
         public static final int ICON_B = 19;
         public static final int ICON_C = 20;
 
+        public static final int BUTTON1_LABEL = 21;
+        public static final int BUTTON2_LABEL = 22;
+        public static final int BUTTON3_LABEL = 23;
     }
 
 
@@ -44,4 +47,15 @@ public class URVConst {
 
     }
 
+    public static final class LabelAction {
+        public static final int CUSTOM = 0;
+        public static final int VALUE_INT = 1;
+        public static final int VALUE_FLOAT = 2;
+    }
+
+    public static final class ClickerAction {
+        public static final int CUSTOM = 0;
+        public static final int VALUE_INCREASE = 1;
+        public static final int VALUE_DECREASE = 2;
+    }
 }

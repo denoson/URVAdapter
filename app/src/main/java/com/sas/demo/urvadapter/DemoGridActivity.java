@@ -113,7 +113,7 @@ public class DemoGridActivity extends AppCompatActivity {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.img_demo);
 
         adapter.clear();
-        adapter.setupGridRowsCols(getApplicationContext(), 2, 6); //adapter.setupGridRowsCols(getApplicationContext(),  adapter.getRandomNum(2, 6), adapter.getRandomNum(1, 6));
+        adapter.setupGridRowsCols(getApplicationContext(), adapter.getRandomNum(3, 6), adapter.getRandomNum(3, 6)); //adapter.setupGridRowsCols(getApplicationContext(),  adapter.getRandomNum(2, 6), adapter.getRandomNum(1, 6));
         adapter.Properties.setAutoHideEmpty(true);
 
         int[] arrImages = { R.drawable.img01, R.drawable.img02, R.drawable.img03, R.drawable.img04, R.drawable.img05, R.drawable.img06,

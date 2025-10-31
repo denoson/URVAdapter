@@ -110,6 +110,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     private int gridColumns = 0;
 
     private int cornerRadius = 6;
+    private boolean debug = false;
 
 
     /**
@@ -135,8 +136,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         ResourceItems.setId00(R.layout.urv_list_item_001);
         itemsClicker.clear();
         itemsElements.clear();
-        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
 
     }
 
@@ -144,10 +145,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         ResourceItems.setId00(R.layout.urv_list_item_002);
         itemsClicker.clear();
         itemsElements.clear();
-        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.lblCounterUnits, URVConst.Logic.COUNTER_UNITS, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lblCounterUnits, URVConst.Logic.COUNTER_UNITS, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
     }
 
 
@@ -156,8 +157,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         ResourceItems.setId00(R.layout.urv_list_item_003);
         itemsClicker.clear();
         itemsElements.clear();
-        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
     }
 
 
@@ -165,25 +166,76 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         ResourceItems.setId00(R.layout.urv_list_item_004);
         itemsClicker.clear();
         itemsElements.clear();
-        addItemElement(R.id.lbl11, URVConst.Logic.COL1_VALUE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.lbl12, URVConst.Logic.COL1_LABEL, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.lbl21, URVConst.Logic.COL2_VALUE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.lbl22, URVConst.Logic.COL2_LABEL, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.lbl11, URVConst.Logic.COL1_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lbl12, URVConst.Logic.COL1_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lbl21, URVConst.Logic.COL2_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lbl22, URVConst.Logic.COL2_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
 
-        addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON); // flash icon
-        addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON); // delete icon
-        addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON); // delete icon
+        addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // flash icon
+        addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
+        addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
 
-        addClickItem(R.id.col1, 1);
-        addClickItem(R.id.col2, 2);
-        addClickItem(R.id.col3, 3);
-        addClickItem(R.id.col4, 4);
-        addClickItem(R.id.col5, 5);
+        addClickItem(R.id.col1, 1, URVConst.ClickerAction.CUSTOM);
+        addClickItem(R.id.col2, 2, URVConst.ClickerAction.CUSTOM);
+        addClickItem(R.id.col3, 3, URVConst.ClickerAction.CUSTOM);
+        addClickItem(R.id.col4, 4, URVConst.ClickerAction.CUSTOM);
+        addClickItem(R.id.col5, 5, URVConst.ClickerAction.CUSTOM);
+    }
+
+    public void initList005(boolean useInternalActions) {
+        ResourceItems.setId00(R.layout.urv_list_item_005);
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addItemElement(R.id.btnL1, URVConst.Logic.BUTTON1_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL2, URVConst.Logic.BUTTON2_LABEL, URVConst.ElementType.TEXT_LABEL, useInternalActions ? URVConst.LabelAction.VALUE_INT : URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL3, URVConst.Logic.BUTTON3_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addClickItem(R.id.btn1, 1, useInternalActions ? URVConst.ClickerAction.VALUE_DECREASE : URVConst.ClickerAction.CUSTOM);
+        //addClickItem(R.id.btn2, 2, URVConst.ClickerAction.CUSTOM); // label - non clickable
+        addClickItem(R.id.btn3, 3, useInternalActions ? URVConst.ClickerAction.VALUE_INCREASE : URVConst.ClickerAction.CUSTOM);
     }
 
 
-    public void addItemElement(int idResource, int id, int idType) {
-        URVItemElement el = new URVItemElement(idResource, id, idType);
+
+    public void initListMixed(boolean useInternalActions) {
+        ResourceItems.setId00(R.layout.urv_list_item_001);
+        ResourceItems.setId01(R.layout.urv_list_item_002);
+        ResourceItems.setId02(R.layout.urv_list_item_003);
+        ResourceItems.setId03(R.layout.urv_list_item_004);
+        ResourceItems.setId04(R.layout.urv_list_item_005);
+
+
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addItemElement(R.id.btnL1, URVConst.Logic.BUTTON1_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL2, URVConst.Logic.BUTTON2_LABEL, URVConst.ElementType.TEXT_LABEL, useInternalActions ? URVConst.LabelAction.VALUE_INT : URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL3, URVConst.Logic.BUTTON3_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addClickItem(R.id.btn1, 1, useInternalActions ? URVConst.ClickerAction.VALUE_DECREASE : URVConst.ClickerAction.CUSTOM);
+        //addClickItem(R.id.btn2, 2, URVConst.ClickerAction.CUSTOM); // label - non clickable
+        addClickItem(R.id.btn3, 3, useInternalActions ? URVConst.ClickerAction.VALUE_INCREASE : URVConst.ClickerAction.CUSTOM);
+
+        addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lblCounterUnits, URVConst.Logic.COUNTER_UNITS, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // flash icon
+        addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
+        addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
+
+        //resItemStyleBck = R.id.pnlColor;
+    }
+
+
+
+
+    public void addItemElement(int idResource, int id, int idType, int act) {
+        URVItemElement el = new URVItemElement(idResource, id, idType, act);
         itemsElements.add(el);
     }
 
@@ -211,10 +263,61 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             case URVConst.Logic.ICON_B: return item.getTextIconB();
             case URVConst.Logic.ICON_C: return item.getTextIconC();
 
+            case URVConst.Logic.BUTTON1_LABEL: return item.getButton1Label();
+            case URVConst.Logic.BUTTON2_LABEL: return item.getButton2Label();
+            case URVConst.Logic.BUTTON3_LABEL: return item.getButton3Label();
+
             default: return "";
         }
     }
     // new functions
+
+
+    private void setLogicText(int logic, URVItem item, String text) {
+        if(debug) Log.d(LOGTAG, String.format("setLogicText logic: %d, i-index: %d, txt: %s", logic, item.getIndex(), text));
+
+        switch (logic) {
+            case URVConst.Logic.TITLE: item.setTitle(text); break;
+            case URVConst.Logic.DESCR: item.setDescription(text); break;
+            case URVConst.Logic.COUNTER_VALUE: item.Counter.setCounter(text); break;
+            case URVConst.Logic.COUNTER_UNITS: item.Counter.setUnits(text); break;
+
+            case URVConst.Logic.COL1_LABEL: item.setColumn1L(text); break;
+            case URVConst.Logic.COL1_VALUE: item.setColumn1V(text); break;
+
+            case URVConst.Logic.COL2_LABEL: item.setColumn2L(text); break;
+            case URVConst.Logic.COL2_VALUE: item.setColumn2V(text); break;
+
+            case URVConst.Logic.COL3_LABEL: item.setColumn3L(text); break;
+            case URVConst.Logic.COL3_VALUE: item.setColumn3V(text); break;
+
+            case URVConst.Logic.COL4_LABEL: item.setColumn4L(text); break;
+            case URVConst.Logic.COL4_VALUE: item.setColumn4V(text); break;
+
+            case URVConst.Logic.ICON_A: item.setTextIconA(text); break;
+            case URVConst.Logic.ICON_B: item.setTextIconB(text); break;
+            case URVConst.Logic.ICON_C:  item.setTextIconC(text); break;
+
+            case URVConst.Logic.BUTTON1_LABEL: item.setButton1Label(text); break;
+            case URVConst.Logic.BUTTON2_LABEL: item.setButton2Label(text); break;
+            case URVConst.Logic.BUTTON3_LABEL: item.setButton3Label(text); break;
+        }
+    }
+
+
+    public void initDefaultListParams(boolean sMultiselect, Typeface fontIcon) {
+        setMultiselect(sMultiselect);
+        if(fontIcon != null) {
+            setIconFont(fontIcon);
+            setTextIcons(true);
+        } else {
+            setIconFont(null);
+            setTextIcons(false);
+        }
+        setColorSelected(Color.rgb(00, 85, 255));
+        setupDefaultCheckbox("L", "M");
+        Properties.setAutoHideEmpty(true);
+    }
 
 
 
@@ -297,8 +400,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         itemsClicker.clear();
         itemsElements.clear();
-        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL);
-        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL);
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
     }
 
 
@@ -379,26 +482,93 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
     private void onItemClick(int index) {
-        Log.d(LOGTAG, String.format("onItemClick index: %d", index));
+        if(debug) Log.d(LOGTAG, String.format("onItemClick index: %d", index));
         if(eventsItem != null) {
             eventsItem.onItemClick(index);
         }
     }
 
     private void onItemLongClick(final int index) {
-        Log.d(LOGTAG, String.format("onItemLongClick index: %d", index));
+        if(debug) Log.d(LOGTAG, String.format("onItemLongClick index: %d", index));
         if (eventsItem != null) {
             eventsItem.onLongClick(index);
         }
     }
 
-    private void onItemClickEx(int index, int id) {
-        Log.d(LOGTAG, String.format("onItemClickEx index: %d, id: %d", index, id));
-        if (eventsItem != null) {
-            eventsItem.onClickEx(index, id);
+    private void onItemClickEx(int index, int id, boolean longCLick) {
+        if(debug) Log.d(LOGTAG, String.format("onItemClickEx index: %d, id: %d", index, id));
+        int clickAction = URVConst.ClickerAction.CUSTOM;
+
+        for(URVClickItem clickItem : itemsClicker) {
+            if(clickItem.getId() == id) {
+                clickAction = clickItem.getAction();
+                break;
+            }
+        }
+
+        if(clickAction != URVConst.ClickerAction.CUSTOM) launchCLickAction(index, clickAction, longCLick);
+        if (eventsItem != null) eventsItem.onClickEx(index, id);
+
+        if(debug) showDebugReport(true, true, true);
+    }
+
+
+    private void launchCLickAction(final int index, final int clickAction, final boolean longCLick) {
+        URVItem item = items.get(index);
+        if(item == null) return;
+
+        float step = item.getValueChangeStep() * (longCLick ? 10 : 1);
+
+        switch (clickAction) {
+
+            case URVConst.ClickerAction.VALUE_DECREASE:
+                item.setValueFloat(item.getValueFloat() - step);
+                if(item.getValueMin() != item.getValueMax()) {
+                    if (item.getValueFloat() < item.getValueMin()) item.setValueFloat(item.getValueMin());
+                    if (item.getValueFloat() > item.getValueMax()) item.setValueFloat(item.getValueMax());
+                }
+                item.setValueInt(Math.round(item.getValueFloat()));
+                updateItemLabelAction(index);
+                break;
+
+            case URVConst.ClickerAction.VALUE_INCREASE:
+                item.setValueFloat(item.getValueFloat() + step);
+                if(item.getValueMin() != item.getValueMax()) {
+                    if (item.getValueFloat() < item.getValueMin()) item.setValueFloat(item.getValueMin());
+                    if (item.getValueFloat() > item.getValueMax()) item.setValueFloat(item.getValueMax());
+                }
+                item.setValueInt(Math.round(item.getValueFloat()));
+                updateItemLabelAction(index);
+                break;
         }
     }
 
+
+    public void updateItemLabelAction(final int index) {
+        URVItem item = items.get(index);
+        if(item == null) return;
+
+        for (URVItemElement element : itemsElements) {
+            switch (element.getAction()) {
+
+                case URVConst.LabelAction.VALUE_INT:
+                    setLogicText(element.getLogic(), item, String.valueOf(item.getValueInt()));
+                    break;
+
+                case URVConst.LabelAction.VALUE_FLOAT:
+                    //setLogicText(element.getLogic(), item, String.valueOf(item.getValueFloat()));
+                    break;
+            }
+        }
+
+        notifyItemChanged(index);
+    }
+
+    public void updateItemsLabelActions() {
+        for(int i=0; i < items.size(); i++) {
+            updateItemLabelAction(i);
+        }
+    }
 
     private void onSelectItem(final int index) {
         if(isMultiselect()) {
@@ -554,192 +724,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public void setTextIcons(boolean textIcons) {
         this.textIcons = textIcons;
     }
-
-
-    /**
-     * Holder Constructor
-     */
-    public class URViewHolder extends RecyclerView.ViewHolder {
-
-        private int index;
-
-        private final FrameLayout panelBck;
-        private final View styleBck;
-
-        private final View imgBackground;
-        private final ImageView imgBitmap;
-        private final TextView imgLabel;
-
-        private final ArrayList<View> holderClickerItems;
-        private final ArrayList<TextView> holderTextViews;
-
-
-        public URViewHolder(View v) {
-            super(v);
-            holderClickerItems = new ArrayList<View>();
-            holderTextViews = new ArrayList<TextView>();
-
-            if (resItemStyleBck != 0) {
-                styleBck = v.findViewById(resItemStyleBck);
-                techViewSetup(styleBck, true);
-            } else styleBck = null;
-
-            if (resItemPanelBck != 0) {
-                panelBck = v.findViewById(resItemPanelBck);
-                techViewSetup(panelBck, true);
-            } else panelBck = null;
-
-
-            // Icon and Image ...........................................
-            if(resItemImgBck != 0) {
-                imgBackground = v.findViewById(resItemImgBck);
-                techViewSetup(imgBackground, true);
-            } else imgBackground = null;
-
-            if(resItemImgLabel != 0) {
-                imgLabel = v.findViewById(resItemImgLabel);
-                techViewSetup(imgLabel, true);
-            } else imgLabel = null;
-
-            if(resItemImgBitmap != 0) {
-                imgBitmap = v.findViewById(resItemImgBitmap);
-                techViewSetup(imgBitmap, true);
-            } else imgBitmap = null;
-
-
-            if(itemsClicker.isEmpty()) {
-                // Use default click/long click mode
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onItemClick(getAdapterPosition());
-                    }
-                });
-
-                v.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        onItemLongClick(getAdapterPosition());
-                        return true;
-                    }
-                });
-            } else {
-                // Scan all click elements
-                // Use custom clickers
-                //Log.d(LOGTAG, "clickItems count: " + clickItems.size());
-
-                v.setBackground(null);
-
-                for(URVClickItem clickItem : itemsClicker) {
-                    View clickView = v.findViewById(clickItem.getIdView());
-                    if(clickView != null) {
-                        //Log.d(LOGTAG, " > set clicked: : " + clickItem.getId());
-                        clickView.setTag(clickItem.getId());
-                        applyEffect(clickView, Color.argb(60, 9, 9, 9));
-                        holderClickerItems.add(clickView);
-                        clickView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                onItemClickEx(getAdapterPosition(), (int) v.getTag());
-                            }
-                        });
-                    }
-                }
-            }
-
-            if(!itemsElements.isEmpty()) {
-                for(URVItemElement customItem : itemsElements) {
-                    switch (customItem.getValueType()) {
-
-                        case URVConst.ElementType.TEXT_LABEL:
-                            TextView tvi = v.findViewById(customItem.getIdView());
-                            if(tvi != null) {
-                                tvi.setTag(customItem.getLogic());
-                                holderTextViews.add(tvi);
-                            }
-                            break;
-
-                        case URVConst.ElementType.TEXT_ICON:
-                            tvi = v.findViewById(customItem.getIdView());
-                            if(tvi != null) {
-                                tvi.setTag(customItem.getLogic());
-                                tvi.setTypeface(getIconFont());
-                                holderTextViews.add(tvi);
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-                Log.d(LOGTAG, "create holder with itemsElements: " + itemsElements.size() + ", holder: " + holderTextViews.size());
-            }
-        }
-
-
-        private void techViewSetup(View v, boolean modeVisible) {
-            if(v != null) {
-                v.setClickable(false);
-                v.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
-            }
-        }
-
-        public View getStyleBck() { return styleBck; }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public void updateSelection(boolean selected) {
-          if(panelBck == null) {
-              return;
-          }
-          if(selected) {
-              panelBck.setBackgroundColor(colorSelected);
-          } else {
-              panelBck.setBackgroundColor(colorNormal);
-          }
-        }
-
-        public void setTextIcon(String txtIconValue) {
-            if(imgLabel != null) {
-                imgLabel.setText(txtIconValue);
-            }
-        }
-
-        public void setImageNone() {
-            setViewVisible(imgBackground, false);
-            setViewVisible(imgBitmap, false);
-            setViewVisible(imgLabel, false);
-        }
-
-        public void setImageTextIcon(String value) {
-            setViewVisible(imgBackground, true);
-            setViewVisible(imgBitmap, false);
-            setViewVisible(imgLabel, true);
-            setTextIcon(value);
-        }
-
-        public void setImageBitmap(Bitmap value) {
-            setViewVisible(imgBackground, true);
-            setViewVisible(imgBitmap, true);
-            setViewVisible(imgLabel, false);
-
-            if(imgBitmap != null) {
-                imgBitmap.setImageBitmap(value);
-            }
-        }
-
-
-        private void setViewVisible(View v, boolean visible) {
-          if(v != null) v.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
-    } // view holder end .....................................
-
 
     public int getColorSelected() {
         return colorSelected;
@@ -945,14 +929,14 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-    public URVClickItem addClickItem(int idView, int id) {
-        URVClickItem ci = new URVClickItem(idView, id);
+    public URVClickItem addClickItem(int idView, int id, int action) {
+        URVClickItem ci = new URVClickItem(idView, id, action);
         itemsClicker.add(ci);
         return ci;
     }
 
-    public URVItemElement addCustomItem(int idView, int id, int valueType) {
-        URVItemElement ci = new URVItemElement(idView, id, valueType);
+    public URVItemElement addCustomItem(int idView, int id, int valueType, int action) {
+        URVItemElement ci = new URVItemElement(idView, id, valueType, action);
         itemsElements.add(ci);
         return ci;
     }
@@ -1004,4 +988,239 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             v.setBackgroundDrawable(shape);
         }
     }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+
+    public void showDebugReport(boolean useAdapter, boolean useClickers, boolean useItems) {
+        if(!debug) return;
+        Log.d(LOGTAG, String.format("showDebugReport adapter: %s, clickers: %s, elements: %s", useAdapter, useClickers, useItems));
+
+        if(useAdapter) {
+            Log.d(LOGTAG, String.format("adapter records: %d", items.size()));
+        }
+
+        if(useClickers) {
+            Log.d(LOGTAG, " ");
+            Log.d(LOGTAG, String.format("clickers: %d", itemsClicker.size()));
+            for (URVClickItem clicker : itemsClicker)
+                Log.d(LOGTAG, String.format(" > clicker id: %d, a: %d, v: %d", clicker.getId(), clicker.getAction(), clicker.getIdView()));
+
+        }
+
+        if(useItems) {
+            Log.d(LOGTAG, " ");
+            Log.d(LOGTAG, String.format("elements: %d", itemsElements.size()));
+            for (URVItemElement element : itemsElements)
+                Log.d(LOGTAG, String.format(" > element logic: %d, v-type: %d, a: %d, v: %d", element.getLogic(), element.getValueType(),
+                        element.getAction(), element.getIdView()));
+
+        }
+    }
+
+
+    /**
+     * Holder Constructor
+     */
+    public class URViewHolder extends RecyclerView.ViewHolder {
+
+        private int index;
+
+        private final FrameLayout panelBck;
+        private final View styleBck;
+
+        private final View imgBackground;
+        private final ImageView imgBitmap;
+        private final TextView imgLabel;
+
+        private final ArrayList<View> holderClickerItems;
+        private final ArrayList<TextView> holderTextViews;
+
+
+        public URViewHolder(View v) {
+            super(v);
+            holderClickerItems = new ArrayList<View>();
+            holderTextViews = new ArrayList<TextView>();
+
+            if (resItemStyleBck != 0) {
+                styleBck = v.findViewById(resItemStyleBck);
+                techViewSetup(styleBck, true);
+            } else styleBck = null;
+
+            if (resItemPanelBck != 0) {
+                panelBck = v.findViewById(resItemPanelBck);
+                techViewSetup(panelBck, true);
+            } else panelBck = null;
+
+
+            // Icon and Image ...........................................
+            if(resItemImgBck != 0) {
+                imgBackground = v.findViewById(resItemImgBck);
+                techViewSetup(imgBackground, true);
+            } else imgBackground = null;
+
+            if(resItemImgLabel != 0) {
+                imgLabel = v.findViewById(resItemImgLabel);
+                techViewSetup(imgLabel, true);
+            } else imgLabel = null;
+
+            if(resItemImgBitmap != 0) {
+                imgBitmap = v.findViewById(resItemImgBitmap);
+                techViewSetup(imgBitmap, true);
+            } else imgBitmap = null;
+
+
+            if(itemsClicker.isEmpty()) {
+                initDefaultClick(v);
+            } else {
+                // Scan all click elements
+                // Use custom clickers
+                //Log.d(LOGTAG, "clickItems count: " + clickItems.size());
+
+                int foundClickers = 0;
+
+                for(URVClickItem clickItem : itemsClicker) {
+                    View clickView = v.findViewById(clickItem.getIdView());
+                    if(clickView != null) {
+                        //Log.d(LOGTAG, " > set clicked: : " + clickItem.getId());
+                        foundClickers++;
+                        clickView.setTag(clickItem.getId());
+                        applyEffect(clickView, Color.argb(60, 9, 9, 9));
+                        holderClickerItems.add(clickView);
+
+                        clickView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onItemClickEx(getAdapterPosition(), (int) v.getTag(), false);
+                            }
+                        });
+
+                        clickView.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                onItemClickEx(getAdapterPosition(), (int) view.getTag(), true);
+                                return true;
+                            }
+                        });
+                    }
+                }
+
+                if(foundClickers > 0) {
+                    v.setBackground(null);
+                } else {
+                    initDefaultClick(v);
+                }
+            }
+
+            if(!itemsElements.isEmpty()) {
+                for(URVItemElement customItem : itemsElements) {
+                    switch (customItem.getValueType()) {
+
+                        case URVConst.ElementType.TEXT_LABEL:
+                            TextView tvi = v.findViewById(customItem.getIdView());
+                            if(tvi != null) {
+                                tvi.setTag(customItem.getLogic());
+                                holderTextViews.add(tvi);
+                            }
+                            break;
+
+                        case URVConst.ElementType.TEXT_ICON:
+                            tvi = v.findViewById(customItem.getIdView());
+                            if(tvi != null) {
+                                tvi.setTag(customItem.getLogic());
+                                tvi.setTypeface(getIconFont());
+                                holderTextViews.add(tvi);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                if(debug) Log.d(LOGTAG, "create holder with itemsElements: " + itemsElements.size() + ", holder: " + holderTextViews.size());
+            }
+        } // URViewHolder - constructor
+
+
+        private void initDefaultClick(View v) {
+            // Use default click/long click mode
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClick(getAdapterPosition());
+                }
+            });
+
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    onItemLongClick(getAdapterPosition());
+                    return true;
+                }
+            });
+        }
+
+
+
+
+        private void techViewSetup(View v, boolean modeVisible) {
+            if(v == null) return;
+            v.setClickable(false);
+            v.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
+        }
+
+        public View getStyleBck() { return styleBck; }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public void updateSelection(boolean selected) {
+            if(panelBck == null) return;
+            panelBck.setBackgroundColor(selected ? colorSelected : colorNormal);
+        }
+
+        public void setTextIcon(String txtIconValue) {
+            if(imgLabel != null) imgLabel.setText(txtIconValue);
+        }
+
+        public void setImageNone() {
+            setViewVisible(imgBackground, false);
+            setViewVisible(imgBitmap, false);
+            setViewVisible(imgLabel, false);
+        }
+
+        public void setImageTextIcon(String value) {
+            setViewVisible(imgBackground, true);
+            setViewVisible(imgBitmap, false);
+            setViewVisible(imgLabel, true);
+            setTextIcon(value);
+        }
+
+        public void setImageBitmap(Bitmap value) {
+            setViewVisible(imgBackground, true);
+            setViewVisible(imgBitmap, true);
+            setViewVisible(imgLabel, false);
+
+            if(imgBitmap != null) imgBitmap.setImageBitmap(value);
+        }
+
+
+        private void setViewVisible(View v, boolean visible) {
+            if(v != null) v.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    } // view holder end ......................................................................
+    // ........................................................................................
+
+
 }

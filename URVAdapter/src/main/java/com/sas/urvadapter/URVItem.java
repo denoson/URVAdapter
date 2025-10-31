@@ -62,6 +62,13 @@ public class URVItem {
     private String textIconB = "";
     private String textIconC = "";
 
+    private String button1Label = "";
+    private String button2Label = "";
+    private String button3Label = "";
+
+    private float valueMin = 0;
+    private float valueMax = 0;
+    private float valueChangeStep = 1;
 
     private URVAbstractCustomData customData = null;
 
@@ -452,5 +459,54 @@ public class URVItem {
 
     public void setTextIconC(String textIconC) {
         this.textIconC = textIconC;
+    }
+
+
+    public float getValueMin() {
+        return valueMin;
+    }
+
+    public void setValueMin(float valueMin) {
+        this.valueMin = valueMin;
+    }
+
+    public float getValueMax() {
+        return valueMax;
+    }
+
+    public void setValueMax(float valueMax) {
+        this.valueMax = valueMax;
+    }
+
+    public float getValueChangeStep() {
+        return valueChangeStep;
+    }
+
+    public void setValueChangeStep(float valueChangeStep) {
+        this.valueChangeStep = valueChangeStep;
+    }
+
+    public String getButton1Label() {
+        return button1Label;
+    }
+
+    public void setButton1Label(String button1Label) {
+        this.button1Label = button1Label;
+    }
+
+    public String getButton2Label() {
+        return button2Label;
+    }
+
+    public void setButton2Label(String button2Label) {
+        this.button2Label = button2Label;
+    }
+
+    public String getButton3Label() {
+        return button3Label;
+    }
+
+    public void setButton3Label(String button3Label) {
+        this.button3Label = button3Label;
     }
 }

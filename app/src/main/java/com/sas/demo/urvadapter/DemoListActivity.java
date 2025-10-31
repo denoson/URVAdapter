@@ -23,6 +23,7 @@ import com.sas.urvadapter.IURVTabEvents;
 import com.sas.urvadapter.IURVTechEvents;
 import com.sas.urvadapter.IURVTerminalEvents;
 import com.sas.urvadapter.URVAdapter;
+import com.sas.urvadapter.URVConst;
 import com.sas.urvadapter.URVItem;
 import com.sas.urvadapter.URVTabButtons;
 
@@ -47,9 +48,6 @@ public class DemoListActivity extends AppCompatActivity {
         });
 
         initResources();
-        //initAdapter();
-        //fillItemsStyle001();
-        //fillCustomItems();
 
         initTabs();
         initSearch();
@@ -65,24 +63,8 @@ public class DemoListActivity extends AppCompatActivity {
         list = findViewById(R.id.rvList);
         adapter = new URVAdapter();
         adapter.initRecyclerView(getApplicationContext(), list, true, 0);
+        adapter.initDefaultListParams(true, Config.FONT_ICON);
 
-        //adapter.initDefaultResources();
-        // if use custom resources:
-        //adapter.setupResourceHolders(R.id.title, R.id.descr, R.id.bckPanel, R.id.msgbox);
-        //adapter.setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
-        //adapter.setupResourceItems(R.layout.item_msg_action, 0, 0, 0, 0);
-
-        adapter.setMultiselect(true);
-        adapter.setIconFont(Config.FONT_ICON);
-        adapter.setTextIcons(true);
-        adapter.setColorSelected(Color.rgb(00, 85, 255));
-        adapter.setupDefaultCheckbox("L", "M");
-
-
-        // Counter
-        //adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
-        //adapter.ResourceCounter.setVisibleUnits(false);
-        //adapter.ResourceCounter.setEnabled(true);
 
         adapter.eventsItem = new IURVItemEvents() {
             @Override
@@ -104,7 +86,7 @@ public class DemoListActivity extends AppCompatActivity {
         adapter.eventsTech = new IURVTechEvents() {
             @Override
             public boolean onAllowSelect(int index) {
-                return false;
+                return true;
             }
 
             @Override
@@ -144,7 +126,7 @@ public class DemoListActivity extends AppCompatActivity {
 
         adapter.clear();
         adapter.initList001();
-        adapter.Properties.setAutoHideEmpty(false);
+        adapter.Properties.setAutoHideEmpty(true);
 
         int i = 0;
         for (int color : URVAdapter.COLORS_BCK) {
@@ -157,10 +139,11 @@ public class DemoListActivity extends AppCompatActivity {
                 item.Icon.setIconText("X");
             }
 
-            adapter.notifyItemInserted(i);
+            if((i==3) || (i==5) || (i==8) ) item.setDescription("");
             i++;
         }
 
+        adapter.notifyDataSetChanged();
         toLog("total items: " + adapter.items.size());
     }
 
@@ -179,6 +162,7 @@ public class DemoListActivity extends AppCompatActivity {
             item.Icon.setIconText("X");
             item.Counter.setCounter("" + i*3);
             item.Counter.setUnits("counter");
+            if((i==3) || (i==5) || (i==8) ) item.setDescription("");
             //adapter.notifyItemInserted(i);
             i++;
         }
@@ -196,6 +180,7 @@ public class DemoListActivity extends AppCompatActivity {
         for (int color : URVAdapter.COLORS_BCK) {
             item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
             item.setCustomBackgroundColor(color);
+            if((i==3) || (i==5) || (i==8) ) item.setDescription("");
             item.Icon.setIconText("X");
             i++;
         }
@@ -224,12 +209,93 @@ public class DemoListActivity extends AppCompatActivity {
             item.setTextIconB("2");
             item.setTextIconC("3");
 
-
+            if((i==3) || (i==5) || (i==8) ) item.setDescription("");
             i++;
         }
 
         adapter.notifyDataSetChanged();
     }
+
+
+    private void fillItemsStyle005() {
+        toLog("fillItemsStyle005");
+        URVItem item;
+        adapter.setDebug(true);
+        adapter.clear();
+        adapter.initList005(true);
+
+        int i = 0;
+        for (int color : URVAdapter.COLORS_BCK) {
+            item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
+            item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
+            item.Icon.setIconText("X");
+            item.setValueInt(adapter.getRandomNum(100, 10000));
+            item.setValueFloat(item.getValueInt());
+
+            if((i==3) || (i==5) || (i==8) ) item.setDescription("");
+
+            item.setButton1Label("-");
+            item.setButton2Label("...");
+            item.setButton3Label("+");
+            i++;
+        }
+
+        adapter.updateItemsLabelActions();
+        //adapter.notifyDataSetChanged();
+    }
+
+
+
+    private void fillItemsDifType() {
+        toLog("fillItemsStyle005");
+        URVItem item;
+        adapter.setDebug(true);
+        adapter.clear();
+        adapter.initListMixed(true);
+
+        for(int iType=0; iType < 5; iType++) {
+
+            for(int i=0; i < 3; i++) {
+                item = adapter.addItem(iType*10 + i, iType, String.format("Item %d-%d", iType, i), "current type " + i, null);
+                item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
+                item.Icon.setIconText("X");
+
+                item.setValueInt(adapter.getRandomNum(10, 600));
+                item.setValueFloat(item.getValueInt());
+
+                item.setButton1Label("-");
+                item.setButton2Label("...");
+                item.setButton3Label("+");
+
+                item.Counter.setCounter("" + iType*10 + i);
+                item.Counter.setUnits("counter");
+
+                if(iType == 2) {
+                    item.setCustomBackgroundColor(URVAdapter.COLORS_BCK[i]); //adapter.HexToColor(URVAdapter.COLORS_BCK[i], 0)
+                }
+
+                if(iType == 5) {
+                    item.setColumn1L("START");
+                    item.setColumn1V("" + (i * 1000));
+
+                    item.setColumn2L("END");
+                    item.setColumn2V("" + (i * 1000 + 789));
+
+                    item.setTextIconA("1");
+                    item.setTextIconB("2");
+                    item.setTextIconC("3");
+                }
+            }
+
+        }
+
+
+        adapter.updateItemsLabelActions();
+    }
+
+
+
+
 
 
 
@@ -242,13 +308,12 @@ public class DemoListActivity extends AppCompatActivity {
         adapter.ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, 0);
         adapter.setupResourceHolders(R.id.bckPanel, R.id.msgbox);
 
-        adapter.addClickItem(R.id.pnlStart, 1);
-        adapter.addClickItem(R.id.pnlEnd, 2);
-        adapter.addClickItem(R.id.pnlCounter, 3);
+        adapter.addClickItem(R.id.pnlStart, 1, URVConst.ClickerAction.CUSTOM);
+        adapter.addClickItem(R.id.pnlEnd, 2, URVConst.ClickerAction.CUSTOM);
+        adapter.addClickItem(R.id.pnlCounter, 3, URVConst.ClickerAction.CUSTOM);
 
         for(int i =0; i < 10; i++) {
             //URVAbstractCustomData cData = new URVAbstractCustomData();
-
             item = adapter.addItem(0, 0, String.format("00%d", i), String.format("00%d", i), null);
             item.Counter.setVisible(false);
         }
@@ -276,9 +341,9 @@ public class DemoListActivity extends AppCompatActivity {
         tabs.addTab("Style 001");
         tabs.addTab("Style 002");
         tabs.addTab("Style 003");
-        tabs.addTab("Date");
-        tabs.addTab("Time");
-        tabs.addTab("Widgets");
+        tabs.addTab("Style 004");
+        tabs.addTab("Style 005");
+        tabs.addTab("Dif Types");
         tabs.addTab("Plugins");
         tabs.addTab("Gauges");
         tabs.addTab("Servers");
@@ -297,6 +362,7 @@ public class DemoListActivity extends AppCompatActivity {
         tabs.setActiveTabIndex(0);
     }
 
+
     private void updateListStyle(int index) {
       toLog("updateListStyle: " + index);
       destroyAdapter();
@@ -310,12 +376,20 @@ public class DemoListActivity extends AppCompatActivity {
           break;
 
           case 2: fillItemsStyle003();
-              break;
+          break;
 
           case 3: fillItemsStyle004();
-              break;
+          break;
+
+          case 4: fillItemsStyle005();
+          break;
+
+          case 5: fillItemsDifType();
+          break;
       }
     }
+
+
 
 
     private EditText edSearch = null;
