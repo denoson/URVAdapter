@@ -36,10 +36,22 @@
             android:text="List" />
 
         <Button
+            android:id="@+id/btnProps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Properties" />
+
+        <Button
             android:id="@+id/btnDemoGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Grid" />
+
+        <Button
+            android:id="@+id/btnDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Custom Dialog" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

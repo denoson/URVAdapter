@@ -222,11 +222,13 @@ public class DemoListActivity extends AppCompatActivity {
         URVItem item;
         adapter.setDebug(true);
         adapter.clear();
-        adapter.initList005(true);
+        //adapter.initList005(true);
+        adapter.initListProperties(true);
 
         int i = 0;
         for (int color : URVAdapter.COLORS_BCK) {
-            item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
+            //item = adapter.addItem(i, "Color[" + i + "] #" + IntToHex(color), "Lorem ipsum dolor sit amet, consectetur adipiscing elit..." + i);
+            item = adapter.addItem(0, 4, "Item type 4x0", "Property value editor, min: 10, max: 20", null);
             item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
             item.Icon.setIconText("X");
             item.setValueInt(adapter.getRandomNum(100, 10000));
@@ -234,9 +236,11 @@ public class DemoListActivity extends AppCompatActivity {
 
             if((i==3) || (i==5) || (i==8) ) item.setDescription("");
 
-            item.setButton1Label("-");
-            item.setButton2Label("...");
-            item.setButton3Label("+");
+            adapter.setupItemModeProperty(item);
+            item.Value.setup("key-B", adapter.getRandomNum(10, 100));
+            item.Value.setupMinMax(10, 1000);
+            item.initEditorPlusMinus();
+
             i++;
         }
 

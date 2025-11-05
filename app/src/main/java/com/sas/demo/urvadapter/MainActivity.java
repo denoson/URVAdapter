@@ -1,19 +1,11 @@
 package com.sas.demo.urvadapter;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,13 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sas.urvadapter.IURVItemEvents;
-import com.sas.urvadapter.IURVTabEvents;
-import com.sas.urvadapter.IURVTechEvents;
-import com.sas.urvadapter.IURVTerminalEvents;
+import com.sas.urvadapter.URVNumberDialogConfig;
+import com.sas.urvadapter.URVNumberInputDialog;
 import com.sas.urvadapter.URVAdapter;
-import com.sas.urvadapter.URVItem;
-import com.sas.urvadapter.URVTabButtons;
 
 /**
  * Date: 2024.09.25
@@ -70,6 +58,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn = findViewById(R.id.btnProps);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), DemoPropertyActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         btn = findViewById(R.id.btnDemoGrid);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +76,32 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btn = findViewById(R.id.btnDialog);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               showMyCustomDialog();
+            }
+        });
     }
+
+    private void showMyCustomDialog() {
+
+        URVNumberDialogConfig nidCfg = new URVNumberDialogConfig();
+        nidCfg.minValue = 10;
+        nidCfg.maxValue = 1000;
+
+        URVNumberInputDialog nid = new URVNumberInputDialog(this, nidCfg, new URVNumberInputDialog.INumberInput() {
+            @Override
+            public void onNumberSet(float number) {
+                Toast.makeText(getApplicationContext(), "Введено: " + number, Toast.LENGTH_SHORT).show();
+            }
+        });
+        nid.show();
+    }
+
+
+
 
 }

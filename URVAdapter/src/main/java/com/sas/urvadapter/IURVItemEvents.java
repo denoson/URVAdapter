@@ -7,4 +7,5 @@ public interface IURVItemEvents {
     void onLongClick(int index);
 
     void onClickEx(int index, int id);
+
 }

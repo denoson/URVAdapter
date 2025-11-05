@@ -1,9 +1,16 @@
 package com.sas.urvadapter;
 
+import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class URVItem {
 
-    public URVCounterValue Counter;
-    public URVIcon Icon;
+    public final URVCounterValue Counter;
+    public final URVIcon Icon;
+    public final URValue Value;
+    public final Map<String, String> Attributes = new HashMap<>();
 
     private int index = -1;
     private long id;
@@ -41,6 +48,7 @@ public class URVItem {
     private boolean valueBool = false;
 
     private int customBackgroundColor = 0;
+    private int markerColor = 0;
 
     private boolean canSwipe = false;
     private boolean canDrag = false;
@@ -61,10 +69,12 @@ public class URVItem {
     private String textIconA = "";
     private String textIconB = "";
     private String textIconC = "";
+    private String textIconD = "";
 
     private String button1Label = "";
     private String button2Label = "";
     private String button3Label = "";
+    private String button4Label = "";
 
     private float valueMin = 0;
     private float valueMax = 0;
@@ -73,8 +83,15 @@ public class URVItem {
     private URVAbstractCustomData customData = null;
 
 
-
-
+    /**
+     * ************************* Constructor *******************************
+     *
+     * @param id
+     * @param viewType
+     * @param title
+     * @param description
+     * @param customData
+     */
     public URVItem(int id, int viewType, String title, String description, URVAbstractCustomData customData) {
         this.id = id;
         this.viewType = viewType;
@@ -83,10 +100,9 @@ public class URVItem {
 
         Counter = new URVCounterValue();
         Icon = new URVIcon();
+        Value = new URValue();
 
-        if(customData != null) {
-            this.customData = customData;
-        }
+        if(customData != null) this.customData = customData;
     }
 
 
@@ -340,6 +356,14 @@ public class URVItem {
         this.customBackgroundColor = customBackgroundColor;
     }
 
+    public int getMarkerColor() {
+        return markerColor;
+    }
+
+    public void setMarkerColor(int markerColor) {
+        this.markerColor = markerColor;
+    }
+
     public boolean isCanSwipe() {
         return canSwipe;
     }
@@ -461,6 +485,13 @@ public class URVItem {
         this.textIconC = textIconC;
     }
 
+    public String getTextIconD() {
+        return textIconD;
+    }
+
+    public void setTextIconD(String textIconD) {
+        this.textIconD = textIconD;
+    }
 
     public float getValueMin() {
         return valueMin;
@@ -508,5 +539,69 @@ public class URVItem {
 
     public void setButton3Label(String button3Label) {
         this.button3Label = button3Label;
+    }
+
+    public String getButton4Label() {
+        return button4Label;
+    }
+
+    public void setButton4Label(String button4Label) {
+        this.button4Label = button4Label;
+    }
+
+    public void initEditorPlusMinus() {
+        setButton1Label("-");
+        setButton2Label(Value.asString());
+        setButton3Label("+");
+    }
+
+
+
+
+    public void setClickerValue(String key, String value) {
+        Attributes.put(buildClickerID(key), value);
+    }
+
+    public String getClickerValue(int idClicker) {
+        return getClickerValue(String.valueOf(idClicker));
+    }
+
+    public String getClickerValue(String key) {
+        return isClickerValueExists(key) ? attrGet(buildClickerID(key)) : "";
+    }
+
+    public boolean isClickerValueExists(String key) {
+        return attrExists(buildClickerID(key));
+    }
+
+    public boolean isClickerValueExists(int idClicker) {
+        return attrExists(buildClickerID(String.valueOf(idClicker)));
+    }
+
+    public String buildClickerID(String key) {
+       return "clicker-" + key;
+    }
+
+
+
+
+    public void attrSet(String key, String value) {
+        Attributes.put(key, value);
+    }
+
+    public String attrGet(String key) {
+        return Attributes.get(key);
+    }
+
+    public boolean attrExists(String key) {
+        return Attributes.containsKey(key);
+    }
+
+    public void attrRemove(String key) {
+        Attributes.remove(key);
+    }
+
+    public Map<String, String> attrGetAll() {
+        return new HashMap<>(Attributes);
     }
 }

@@ -60,18 +60,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/btn1"
+            android:id="@+id/ib1"
             android:layout_width="50dp"
             android:layout_height="0dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/urv_bck_counter"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn2"
+            app:layout_constraintEnd_toStartOf="@+id/ib2"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/btnL1"
+                android:id="@+id/il1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -79,38 +79,11 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="24sp" />
-
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/btn2"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/urv_bck_counter"
-            android:gravity="center_horizontal"
-            android:minWidth="70dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn3"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/btnL2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="X"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="24sp" />
-
-        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btn3"
+            android:id="@+id/ib2"
             android:layout_width="50dp"
             android:layout_height="0dp"
             android:background="@drawable/urv_bck_counter"
@@ -120,7 +93,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/btnL3"
+                android:id="@+id/il2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -128,8 +101,8 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="24sp" />
-
         </LinearLayout>
+
 
         <FrameLayout
             android:id="@+id/imgBck"
@@ -172,7 +145,7 @@
             android:orientation="vertical"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn1"
+            app:layout_constraintEnd_toStartOf="@+id/ib1"
             app:layout_constraintStart_toEndOf="@+id/imgBck"
             app:layout_constraintTop_toTopOf="parent">
 

@@ -16,9 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -41,18 +41,19 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public static final int VERSION = 1;
     public final String LOGTAG = "URVAdapter";
 
-    public final URVProperties Properties; // visible for title, descr, autohide
+    public final URVProperties Properties; // visible for title, descr, auto-hide
     public ArrayList<URVItem> items;
     public ArrayList<URVItem> filterSrcItems;
 
     public IURVItemEvents eventsItem = null;
     public IURVTechEvents eventsTech = null;
     public IURVTerminalEvents eventsTerminal = null;
+    public IURVPropertyEvents eventProperty = null;
 
     public URVResources ResourceItems;  // resources id00 .. id09
     public URVCounterResources ResourceCounter; // enabled, id: box, counter, unit
 
-    public final ArrayList<URVClickItem> itemsClicker;
+    public final ArrayList<URVItemClicker> itemsClicker;
     public final ArrayList<URVItemElement> itemsElements;
 
 
@@ -64,11 +65,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     };
 
 
-    public static final int ITEM_MODE_NORMAL = 0;
-    public static final int ITEM_MODE_CHECKBOX = 1;
-
     private int resItemPanelBck = 0;
-    private int resItemStyleBck = 0;
+    private int resItemColorMarker = 0;
 
     private int resItemImgBck = 0;
     private int resItemImgBitmap = 0;
@@ -87,6 +85,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     private final String defaultTextIcon = "✓";
     private int colorSelected = Color.argb(40, 0, 0, 255);
     private int colorNormal = Color.TRANSPARENT;
+    private int defaultItemBackgroundColor = 0xFF202020;
 
 
 
@@ -119,7 +118,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public URVAdapter() {
         items = new ArrayList<URVItem>();
         filterSrcItems = new ArrayList<URVItem>();
-        itemsClicker = new ArrayList<URVClickItem>();
+        itemsClicker = new ArrayList<URVItemClicker>();
         itemsElements = new ArrayList<URVItemElement>();
 
         ResourceItems = new URVResources();
@@ -153,7 +152,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
     public void initList003() {
-        resItemStyleBck = R.id.pnlColor;
         ResourceItems.setId00(R.layout.urv_list_item_003);
         itemsClicker.clear();
         itemsElements.clear();
@@ -194,7 +192,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         addItemElement(R.id.btnL3, URVConst.Logic.BUTTON3_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
 
         addClickItem(R.id.btn1, 1, useInternalActions ? URVConst.ClickerAction.VALUE_DECREASE : URVConst.ClickerAction.CUSTOM);
-        //addClickItem(R.id.btn2, 2, URVConst.ClickerAction.CUSTOM); // label - non clickable
+        addClickItem(R.id.btn2, 2, URVConst.ClickerAction.CUSTOM); // label - non clickable
         addClickItem(R.id.btn3, 3, useInternalActions ? URVConst.ClickerAction.VALUE_INCREASE : URVConst.ClickerAction.CUSTOM);
     }
 
@@ -227,8 +225,51 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // flash icon
         addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
         addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM); // delete icon
+    }
 
-        //resItemStyleBck = R.id.pnlColor;
+
+
+    public void initListProperties(boolean useInternalActions) {
+        ResourceItems.setId00(R.layout.urv_list_item_001);
+        ResourceItems.setId01(R.layout.urv_list_item_002);
+        ResourceItems.setId02(R.layout.urv_list_item_003);
+        ResourceItems.setId03(R.layout.urv_list_item_004);
+        ResourceItems.setId04(R.layout.urv_list_item_005);
+        ResourceItems.setId05(R.layout.urv_list_item_btn2);
+        ResourceItems.setId06(R.layout.urv_list_item_btn3);
+        ResourceItems.setId07(R.layout.urv_list_item_btn4);
+
+        itemsClicker.clear();
+        itemsElements.clear();
+        addItemElement(R.id.title, URVConst.Logic.TITLE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.descr, URVConst.Logic.DESCR, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addItemElement(R.id.btnL1, URVConst.Logic.BUTTON1_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL2, URVConst.Logic.BUTTON2_LABEL, URVConst.ElementType.TEXT_LABEL, useInternalActions ? URVConst.LabelAction.VALUE_INT : URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.btnL3, URVConst.Logic.BUTTON3_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addClickItem(R.id.btn1, URVConst.ClickerID.BUTTON_DEC, useInternalActions ? URVConst.ClickerAction.VALUE_DECREASE : URVConst.ClickerAction.CUSTOM);
+        addClickItem(R.id.btn2, URVConst.ClickerID.BUTTON_INPUT_NUMBER, useInternalActions ? URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG : URVConst.ClickerAction.CUSTOM); // label - non clickable
+        addClickItem(R.id.btn3, URVConst.ClickerID.BUTTON_INC, useInternalActions ? URVConst.ClickerAction.VALUE_INCREASE : URVConst.ClickerAction.CUSTOM);
+
+        addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.lblCounterUnits, URVConst.Logic.COUNTER_UNITS, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
+
+        addItemElement(R.id.textIconA, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.textIconB, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.textIconC, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+
+
+        addClickItem(R.id.ib1, URVConst.ClickerID.BUTTON_1, URVConst.ClickerAction.BUTTON_1);
+        addClickItem(R.id.ib2, URVConst.ClickerID.BUTTON_2, URVConst.ClickerAction.BUTTON_2);
+        addClickItem(R.id.ib3, URVConst.ClickerID.BUTTON_3, URVConst.ClickerAction.BUTTON_3);
+        addClickItem(R.id.ib4, URVConst.ClickerID.BUTTON_4, URVConst.ClickerAction.BUTTON_4);
+
+
+        addItemElement(R.id.il1, URVConst.Logic.ICON_A, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.il2, URVConst.Logic.ICON_B, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.il3, URVConst.Logic.ICON_C, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
+        addItemElement(R.id.il4, URVConst.Logic.ICON_D, URVConst.ElementType.TEXT_ICON, URVConst.LabelAction.CUSTOM);
     }
 
 
@@ -262,10 +303,12 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             case URVConst.Logic.ICON_A: return item.getTextIconA();
             case URVConst.Logic.ICON_B: return item.getTextIconB();
             case URVConst.Logic.ICON_C: return item.getTextIconC();
+            case URVConst.Logic.ICON_D: return item.getTextIconD();
 
             case URVConst.Logic.BUTTON1_LABEL: return item.getButton1Label();
             case URVConst.Logic.BUTTON2_LABEL: return item.getButton2Label();
             case URVConst.Logic.BUTTON3_LABEL: return item.getButton3Label();
+            case URVConst.Logic.BUTTON4_LABEL: return item.getButton4Label();
 
             default: return "";
         }
@@ -297,16 +340,26 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             case URVConst.Logic.ICON_A: item.setTextIconA(text); break;
             case URVConst.Logic.ICON_B: item.setTextIconB(text); break;
             case URVConst.Logic.ICON_C:  item.setTextIconC(text); break;
+            case URVConst.Logic.ICON_D:  item.setTextIconD(text); break;
 
             case URVConst.Logic.BUTTON1_LABEL: item.setButton1Label(text); break;
             case URVConst.Logic.BUTTON2_LABEL: item.setButton2Label(text); break;
             case URVConst.Logic.BUTTON3_LABEL: item.setButton3Label(text); break;
+            case URVConst.Logic.BUTTON4_LABEL: item.setButton4Label(text); break;
         }
     }
 
 
+    public URVItemClicker getClicker(int idClicker) {
+        for(URVItemClicker clicker : itemsClicker) {
+          if(clicker.getId() == idClicker) return clicker;
+        }
+        return null;
+    }
+
     public void initDefaultListParams(boolean sMultiselect, Typeface fontIcon) {
         setMultiselect(sMultiselect);
+
         if(fontIcon != null) {
             setIconFont(fontIcon);
             setTextIcons(true);
@@ -314,6 +367,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             setIconFont(null);
             setTextIcons(false);
         }
+
         setColorSelected(Color.rgb(00, 85, 255));
         setupDefaultCheckbox("L", "M");
         Properties.setAutoHideEmpty(true);
@@ -329,7 +383,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
     public void initDefaultResources() {
-        setupResourceHolders(R.id.bckPanel, R.id.msgbox);
+        setupResourceHolders(R.id.msgbox, R.id.markerColor);
         setupResourceImage(R.id.imgBck, R.id.imgBitmap, R.id.imgLbl);
         setupResourceItems(getDefaultLayoutListItem(), 0, 0, 0, 0);
         ResourceCounter.setup(R.id.pnlCounter, R.id.lblCounter, R.id.lblCounterUnits);
@@ -363,6 +417,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     private void addItemRaw(URVItem item) {
         item.setIndex(items.size());
+        item.setCustomBackgroundColor(defaultItemBackgroundColor);
         items.add(item);
     }
 
@@ -413,7 +468,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         switch (data.getItemMode()) {
 
-            case ITEM_MODE_CHECKBOX:
+            case URVConst.ItemMode.CHECKBOX:
                 if(data.isChecked()) {
                     data.setCustomBackgroundColor(colorBckChecked);
                     data.Icon.setIconText(iconCheckboxChecked);
@@ -451,12 +506,14 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 break;
         }
 
-        if (holder.getStyleBck() != null) {
-            setViewBackgroundColor(holder.getStyleBck(), dpToPx(cornerRadius),
+        if (holder.getPanelBck() != null) {
+            setViewBackgroundColor(holder.getPanelBck(), dpToPx(cornerRadius),
                     data.getCustomBackgroundColor() == 0 ? Color.TRANSPARENT : data.getCustomBackgroundColor());
-            // old way
-            //Drawable background = holder.getStyleBck().getBackground();
-            //background.setTint(data.getCustomBackgroundColor());
+        }
+
+        if (holder.getColorMarker() != null) {
+            setViewBackgroundColor(holder.getColorMarker(), dpToPx(cornerRadius),
+                    data.getMarkerColor() == 0 ? Color.TRANSPARENT : data.getMarkerColor());
         }
     }
 
@@ -495,25 +552,111 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
     }
 
-    private void onItemClickEx(int index, int id, boolean longCLick) {
-        if(debug) Log.d(LOGTAG, String.format("onItemClickEx index: %d, id: %d", index, id));
+
+
+    private void onItemClickEx(int itemIndex, int idClicker, boolean longCLick) {
         int clickAction = URVConst.ClickerAction.CUSTOM;
 
-        for(URVClickItem clickItem : itemsClicker) {
-            if(clickItem.getId() == id) {
-                clickAction = clickItem.getAction();
-                break;
-            }
+        URVItem item = items.get(itemIndex);
+        if(item == null) return;
+
+        if(debug) Log.d(LOGTAG, String.format("onItemClickEx itemIndex: %d, id: %d, i-mode: %d", itemIndex, idClicker, item.getItemMode()));
+
+        if(item.getItemMode() == URVConst.ItemMode.PROPERTY_KEY_VALUE) {
+            onItemPropertyClick(itemIndex, idClicker, longCLick);
+            return;
         }
 
-        if(clickAction != URVConst.ClickerAction.CUSTOM) launchCLickAction(index, clickAction, longCLick);
-        if (eventsItem != null) eventsItem.onClickEx(index, id);
-
+        if (eventsItem != null) eventsItem.onClickEx(itemIndex, idClicker);
         if(debug) showDebugReport(true, true, true);
     }
 
 
-    private void launchCLickAction(final int index, final int clickAction, final boolean longCLick) {
+    private int currentClickAction = 0;
+
+    private void onItemPropertyClick(final int itemIndex, final int idClicker, final boolean longCLick) {
+        final URVItem currentItem = items.get(itemIndex);
+        currentClickAction = URVConst.ClickerAction.CUSTOM;
+
+        if(currentItem.isClickerValueExists(idClicker)) {
+            currentItem.Value.setValue(currentItem.getClickerValue(idClicker));
+        } else {
+            URVItemClicker clickItem = getClicker(idClicker);
+            if(clickItem != null) {
+                currentClickAction = clickItem.getAction();
+
+                if(clickItem.isValueExists()) {
+                    currentItem.Value.setValue(clickItem.getValueBool());
+                    currentItem.Value.setValue(clickItem.getValueStr());
+                    currentItem.Value.setValue(clickItem.getValueInt());
+                    currentItem.Value.setValue(clickItem.getValueFloat());
+                }
+            }
+        }
+
+        //if(clickAction != URVConst.ClickerAction.CUSTOM) launchCLickAction(itemIndex, clickAction, idClicker, longCLick);
+        //if(eventProperty != null) eventProperty.onPropertyChanges(itemIndex, clickAction, idClicker, item.Value);
+
+        float step = currentItem.getValueChangeStep() * (longCLick ? 10 : 1);
+        switch (currentClickAction) {
+
+            case URVConst.ClickerAction.VALUE_DECREASE:
+                currentItem.Value.dec(step);
+                updateItemLabelAction(itemIndex);
+                break;
+
+            case URVConst.ClickerAction.VALUE_INCREASE:
+                currentItem.Value.inc(step);
+                updateItemLabelAction(itemIndex);
+                break;
+
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+
+                URVNumberDialogConfig nidCfg = new URVNumberDialogConfig();
+                nidCfg.minValue = currentItem.Value.getMin();
+                nidCfg.maxValue = currentItem.Value.getMax();
+                nidCfg.useFloatNumber = currentItem.Value.isFloat();
+                nidCfg.useNegative = true;
+
+                if(currentItem.Value.isFloat()) nidCfg.defaultValue = currentItem.Value.getValueFloat();
+                if(currentItem.Value.isInt()) nidCfg.defaultValue = currentItem.Value.getValueInt();
+
+                URVNumberInputDialog nid = new URVNumberInputDialog(rView.getContext(), nidCfg, new URVNumberInputDialog.INumberInput() {
+                    @Override
+                    public void onNumberSet(float number) {
+                        currentItem.setValueFloat(number);
+                        currentItem.setValueInt(Math.round(number));
+
+                        currentItem.Value.setValue(number);
+                        currentItem.Value.setValue(Math.round(number));
+
+                        updateItemLabelAction(itemIndex);
+                        Toast.makeText(rView.getContext(), "Number: " + number, Toast.LENGTH_SHORT).show();
+                        if(eventProperty != null) eventProperty.onPropertyChanges(itemIndex, currentClickAction, idClicker, currentItem.Value);
+                    }
+                });
+                nid.show();
+                break;
+
+            default:
+                break;
+        }
+
+        switch (currentClickAction) {
+
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+                // skip property change event
+                break;
+
+            default:
+                if(eventProperty != null) eventProperty.onPropertyChanges(itemIndex, currentClickAction, idClicker, currentItem.Value);
+                break;
+        }
+    }
+
+
+/*
+    private void launchCLickAction(final int index, final int clickAction, int idClicker, final boolean longCLick) {
         URVItem item = items.get(index);
         if(item == null) return;
 
@@ -522,27 +665,31 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         switch (clickAction) {
 
             case URVConst.ClickerAction.VALUE_DECREASE:
-                item.setValueFloat(item.getValueFloat() - step);
-                if(item.getValueMin() != item.getValueMax()) {
-                    if (item.getValueFloat() < item.getValueMin()) item.setValueFloat(item.getValueMin());
-                    if (item.getValueFloat() > item.getValueMax()) item.setValueFloat(item.getValueMax());
-                }
-                item.setValueInt(Math.round(item.getValueFloat()));
+                item.Value.dec(step);
                 updateItemLabelAction(index);
                 break;
 
             case URVConst.ClickerAction.VALUE_INCREASE:
-                item.setValueFloat(item.getValueFloat() + step);
-                if(item.getValueMin() != item.getValueMax()) {
-                    if (item.getValueFloat() < item.getValueMin()) item.setValueFloat(item.getValueMin());
-                    if (item.getValueFloat() > item.getValueMax()) item.setValueFloat(item.getValueMax());
-                }
-                item.setValueInt(Math.round(item.getValueFloat()));
+                item.Value.inc(step);
                 updateItemLabelAction(index);
+                break;
+
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+                NumberInputDialog nid = new NumberInputDialog(rView.getContext(), null, new NumberInputDialog.INumberInput() {
+                    @Override
+                    public void onNumberSet(float number) {
+                        Toast.makeText(rView.getContext(), "Введено: " + number, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                nid.show();
+                break;
+
+            default:
+
                 break;
         }
     }
-
+*/
 
     public void updateItemLabelAction(final int index) {
         URVItem item = items.get(index);
@@ -552,11 +699,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             switch (element.getAction()) {
 
                 case URVConst.LabelAction.VALUE_INT:
-                    setLogicText(element.getLogic(), item, String.valueOf(item.getValueInt()));
+                    setLogicText(element.getLogic(), item, item.Value.asString());
                     break;
 
                 case URVConst.LabelAction.VALUE_FLOAT:
-                    //setLogicText(element.getLogic(), item, String.valueOf(item.getValueFloat()));
+                    setLogicText(element.getLogic(), item, item.Value.asString());
                     break;
             }
         }
@@ -564,11 +711,13 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         notifyItemChanged(index);
     }
 
+
     public void updateItemsLabelActions() {
         for(int i=0; i < items.size(); i++) {
             updateItemLabelAction(i);
         }
     }
+
 
     private void onSelectItem(final int index) {
         if(isMultiselect()) {
@@ -650,9 +799,9 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
-    public void setupResourceHolders(int idBck, int idStyleBck) {
+    public void setupResourceHolders(int idBck, int idColorMarker) {
         resItemPanelBck = idBck;
-        resItemStyleBck = idStyleBck;
+        resItemColorMarker = idColorMarker;
     }
 
     public void setupResourceImage(int idImgBck, int idImgBitmap, int idImgLabel) {
@@ -746,6 +895,15 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             rView.scrollToPosition(getItemCount() - 1);
         }
     }
+
+    public int getDefaultItemBackgroundColor() {
+        return defaultItemBackgroundColor;
+    }
+
+    public void setDefaultItemBackgroundColor(int defaultItemBackgroundColor) {
+        this.defaultItemBackgroundColor = defaultItemBackgroundColor;
+    }
+
 
 
 
@@ -928,18 +1086,35 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
+    public void setupItemModeCheckbox(URVItem item) {
+        item.setItemMode(URVConst.ItemMode.CHECKBOX);
+    }
 
-    public URVClickItem addClickItem(int idView, int id, int action) {
-        URVClickItem ci = new URVClickItem(idView, id, action);
+    public void setupItemModeProperty(URVItem item) {
+        item.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+    }
+
+
+    /**
+     *
+     * @param idView
+     * @param id
+     * @param action
+     * @return
+     */
+    public URVItemClicker addClickItem(int idView, int id, int action) {
+        URVItemClicker ci = new URVItemClicker(idView, id, action);
         itemsClicker.add(ci);
         return ci;
     }
+
 
     public URVItemElement addCustomItem(int idView, int id, int valueType, int action) {
         URVItemElement ci = new URVItemElement(idView, id, valueType, action);
         itemsElements.add(ci);
         return ci;
     }
+
 
     private void applyEffect(View view, int defColor) {
         // Создаем нормальный фон
@@ -1009,7 +1184,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         if(useClickers) {
             Log.d(LOGTAG, " ");
             Log.d(LOGTAG, String.format("clickers: %d", itemsClicker.size()));
-            for (URVClickItem clicker : itemsClicker)
+            for (URVItemClicker clicker : itemsClicker)
                 Log.d(LOGTAG, String.format(" > clicker id: %d, a: %d, v: %d", clicker.getId(), clicker.getAction(), clicker.getIdView()));
 
         }
@@ -1025,6 +1200,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+
+
+
+
+
     /**
      * Holder Constructor
      */
@@ -1032,8 +1212,8 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         private int index;
 
-        private final FrameLayout panelBck;
-        private final View styleBck;
+        private final ViewGroup panelBck;
+        private final View colorMarker;
 
         private final View imgBackground;
         private final ImageView imgBitmap;
@@ -1048,10 +1228,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             holderClickerItems = new ArrayList<View>();
             holderTextViews = new ArrayList<TextView>();
 
-            if (resItemStyleBck != 0) {
-                styleBck = v.findViewById(resItemStyleBck);
-                techViewSetup(styleBck, true);
-            } else styleBck = null;
+            if (resItemColorMarker != 0) {
+                colorMarker = v.findViewById(resItemColorMarker);
+                techViewSetup(colorMarker, true);
+            } else colorMarker = null;
 
             if (resItemPanelBck != 0) {
                 panelBck = v.findViewById(resItemPanelBck);
@@ -1085,8 +1265,9 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
                 int foundClickers = 0;
 
-                for(URVClickItem clickItem : itemsClicker) {
+                for(URVItemClicker clickItem : itemsClicker) {
                     View clickView = v.findViewById(clickItem.getIdView());
+
                     if(clickView != null) {
                         //Log.d(LOGTAG, " > set clicked: : " + clickItem.getId());
                         foundClickers++;
@@ -1175,7 +1356,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
             v.setVisibility(modeVisible ? View.VISIBLE : View.GONE);
         }
 
-        public View getStyleBck() { return styleBck; }
+        public View getColorMarker() { return colorMarker; }
+
+        public ViewGroup getPanelBck() {
+            return panelBck;
+        }
 
         public int getIndex() {
             return index;

@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="number_button_normal">#F5F5F5</color>
+    <color name="number_button_pressed">#E0E0E0</color>
+    <color name="function_button_normal">#E3F2FD</color>
+    <color name="function_button_pressed">#BBDEFB</color>
+    <color name="button_stroke">#BDBDBD</color>
 </resources>
