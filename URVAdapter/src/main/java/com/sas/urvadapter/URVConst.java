@@ -72,7 +72,10 @@ public class URVConst {
 
         public static final int VALUE_INCREASE = 10;
         public static final int VALUE_DECREASE = 11;
-        public static final int SHOW_INPUT_NUMBER_DIALOG = 12;
+        public static final int SHOW_INPUT_NUMBER = 12;
+        public static final int SHOW_INPUT_TEXT = 13;
+        public static final int SHOW_SELECT_ONE = 14;
+        public static final int SHOW_COLOR_PICKER = 15;
 
     }
 
@@ -104,4 +107,5 @@ public class URVConst {
         public static final int BUTTON_MAX = 15;
         public static final int BUTTON_INPUT_NUMBER = 16;
     }
+
 }

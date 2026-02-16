@@ -1,5 +1,6 @@
 package com.sas.urvadapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -21,12 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Date: 2024.09.25
@@ -49,6 +52,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     public IURVTechEvents eventsTech = null;
     public IURVTerminalEvents eventsTerminal = null;
     public IURVPropertyEvents eventProperty = null;
+    //public IURVColorPicker eventsOnColorPicker = null;
 
     public URVResources ResourceItems;  // resources id00 .. id09
     public URVCounterResources ResourceCounter; // enabled, id: box, counter, unit
@@ -249,7 +253,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         addItemElement(R.id.btnL3, URVConst.Logic.BUTTON3_LABEL, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
 
         addClickItem(R.id.btn1, URVConst.ClickerID.BUTTON_DEC, useInternalActions ? URVConst.ClickerAction.VALUE_DECREASE : URVConst.ClickerAction.CUSTOM);
-        addClickItem(R.id.btn2, URVConst.ClickerID.BUTTON_INPUT_NUMBER, useInternalActions ? URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG : URVConst.ClickerAction.CUSTOM); // label - non clickable
+        addClickItem(R.id.btn2, URVConst.ClickerID.BUTTON_INPUT_NUMBER, useInternalActions ? URVConst.ClickerAction.SHOW_INPUT_NUMBER : URVConst.ClickerAction.CUSTOM); // label - non clickable
         addClickItem(R.id.btn3, URVConst.ClickerID.BUTTON_INC, useInternalActions ? URVConst.ClickerAction.VALUE_INCREASE : URVConst.ClickerAction.CUSTOM);
 
         addItemElement(R.id.lblCounter, URVConst.Logic.COUNTER_VALUE, URVConst.ElementType.TEXT_LABEL, URVConst.LabelAction.CUSTOM);
@@ -415,6 +419,95 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+    public URVItem addPropertyCheckbox(int id, String title, String descr, String key, boolean checked) {
+        URVItem newItem = new URVItem(id, 0, title, descr, null);
+        newItem.setItemMode(URVConst.ItemMode.CHECKBOX);
+        newItem.Value.setup(key, checked);
+        newItem.setChecked(checked);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+    public URVItem addPropertyText(int id, String descr, String key, String value, String txtIcon) {
+        URVItem newItem = new URVItem(id, 0, value, descr, null);
+        newItem.Icon.setIconText(txtIcon);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        newItem.Value.setup(key, (String) value);
+        newItem.setClickAction(URVConst.ClickerAction.SHOW_INPUT_TEXT);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+    public URVItem addPropertyList(int id, String descr, String key, String[] listValues, int selectedIndex, String txtIcon) {
+        URVItem newItem = new URVItem(id, 0, listValues[selectedIndex], descr + getPreviewString(listValues, 3, true, true), null);
+        newItem.Icon.setIconText(txtIcon);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        String combined = TextUtils.join(";", listValues);
+        newItem.setValueString(combined);
+        newItem.Value.setup(key, (String) listValues[selectedIndex]);
+        newItem.Value.setValue(selectedIndex);
+        newItem.setClickAction(URVConst.ClickerAction.SHOW_SELECT_ONE);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+
+    public URVItem addPropertyList(int id, String descr, String key, String[] listValues, String[] icons, int selectedIndex) {
+        URVItem newItem = new URVItem(id, 0, listValues[selectedIndex], descr + getPreviewString(listValues, 3, true, true), null);
+        newItem.Icon.setIconText(icons[selectedIndex]);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        String combined = TextUtils.join(";", listValues);
+
+        newItem.setValueString(combined);
+        newItem.attrSet("icons", TextUtils.join(";", icons));
+
+        newItem.Value.setup(key, (String) listValues[selectedIndex]);
+        newItem.Value.setValue(selectedIndex);
+        newItem.setClickAction(URVConst.ClickerAction.SHOW_SELECT_ONE);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+    public URVItem addPropertyColorExt(int id, String title, String descr, String key, int defColor, String icon) {
+        URVItem newItem = new URVItem(id, 2, title, descr, null);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        newItem.setClickAction(URVConst.ClickerAction.SHOW_COLOR_PICKER);
+        newItem.setMarkerColor(defColor);
+        newItem.Value.setup(key, defColor);
+        newItem.setValueInt(defColor);
+        newItem.Icon.setIconText(icon);
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+
+    public URVItem addPropertyNumber(int id, String title, String descr, String key, int value, int min, int max, int changeStep, String txtIcon) {
+        URVItem newItem = new URVItem(id, 4, title, descr, null);
+        newItem.Icon.setIconText(txtIcon);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        newItem.Value.setup(key, value);
+        if(min != max) newItem.Value.setupMinMax(min, max);
+        if(changeStep != 0) newItem.setValueChangeStep(changeStep);
+        newItem.initEditorPlusMinus();
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+    public URVItem addPropertyNumberF(int id, String title, String descr, String key, float value, float min, float max, float changeStep, String txtIcon) {
+        URVItem newItem = new URVItem(id, 4, title, descr, null);
+        newItem.Icon.setIconText(txtIcon);
+        newItem.setItemMode(URVConst.ItemMode.PROPERTY_KEY_VALUE);
+        newItem.Value.setup(key, value);
+        if(min != max) newItem.Value.setupMinMax(min, max);
+        if(changeStep != 0) newItem.setValueChangeStep(changeStep);
+        newItem.initEditorPlusMinus();
+        addItemRaw(newItem);
+        return newItem;
+    }
+
+
+
+
     private void addItemRaw(URVItem item) {
         item.setIndex(items.size());
         item.setCustomBackgroundColor(defaultItemBackgroundColor);
@@ -537,14 +630,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         return new URViewHolder(v);
     }
 
-
-    private void onItemClick(int index) {
-        if(debug) Log.d(LOGTAG, String.format("onItemClick index: %d", index));
-        if(eventsItem != null) {
-            eventsItem.onItemClick(index);
-        }
-    }
-
     private void onItemLongClick(final int index) {
         if(debug) Log.d(LOGTAG, String.format("onItemLongClick index: %d", index));
         if (eventsItem != null) {
@@ -553,7 +638,38 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
 
+    // эта функция вызывается если item весь кликательный
+    // без внутренних кликателей
+    private void onItemClick(int index) {
+        if(debug) Log.d(LOGTAG, String.format("onItemClick index: %d", index));
+        final URVItem item = items.get(index);
 
+        switch (item.getItemMode()) {
+            case URVConst.ItemMode.CHECKBOX:
+                onCheckBoxClick(index);
+                return;
+        }
+
+        switch (item.getClickAction()) {
+            case URVConst.ClickerAction.SHOW_INPUT_TEXT: onClickPropertyText(index);
+            break;
+
+            case URVConst.ClickerAction.SHOW_SELECT_ONE: onClickPropertyList(index);
+            break;
+
+            case URVConst.ClickerAction.SHOW_COLOR_PICKER:
+                onClickPropertyColor(index);
+                return;
+
+            default:
+              if(eventsItem != null) eventsItem.onItemClick(index);
+            break;
+        }
+    }
+
+
+    // эта функция вызывается для item если несколько кликательных элементов
+    // например 2 - 3 доп кнопки
     private void onItemClickEx(int itemIndex, int idClicker, boolean longCLick) {
         int clickAction = URVConst.ClickerAction.CUSTOM;
 
@@ -562,14 +678,18 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         if(debug) Log.d(LOGTAG, String.format("onItemClickEx itemIndex: %d, id: %d, i-mode: %d", itemIndex, idClicker, item.getItemMode()));
 
-        if(item.getItemMode() == URVConst.ItemMode.PROPERTY_KEY_VALUE) {
-            onItemPropertyClick(itemIndex, idClicker, longCLick);
-            return;
+        switch (item.getItemMode()) {
+
+            case URVConst.ItemMode.PROPERTY_KEY_VALUE:
+                onItemPropertyClick(itemIndex, idClicker, longCLick);
+                return;
+
         }
 
         if (eventsItem != null) eventsItem.onClickEx(itemIndex, idClicker);
         if(debug) showDebugReport(true, true, true);
     }
+
 
 
     private int currentClickAction = 0;
@@ -610,7 +730,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
                 updateItemLabelAction(itemIndex);
                 break;
 
-            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER:
 
                 URVNumberDialogConfig nidCfg = new URVNumberDialogConfig();
                 nidCfg.minValue = currentItem.Value.getMin();
@@ -644,7 +764,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
         switch (currentClickAction) {
 
-            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER:
                 // skip property change event
                 break;
 
@@ -654,42 +774,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
     }
 
-
-/*
-    private void launchCLickAction(final int index, final int clickAction, int idClicker, final boolean longCLick) {
-        URVItem item = items.get(index);
-        if(item == null) return;
-
-        float step = item.getValueChangeStep() * (longCLick ? 10 : 1);
-
-        switch (clickAction) {
-
-            case URVConst.ClickerAction.VALUE_DECREASE:
-                item.Value.dec(step);
-                updateItemLabelAction(index);
-                break;
-
-            case URVConst.ClickerAction.VALUE_INCREASE:
-                item.Value.inc(step);
-                updateItemLabelAction(index);
-                break;
-
-            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
-                NumberInputDialog nid = new NumberInputDialog(rView.getContext(), null, new NumberInputDialog.INumberInput() {
-                    @Override
-                    public void onNumberSet(float number) {
-                        Toast.makeText(rView.getContext(), "Введено: " + number, Toast.LENGTH_SHORT).show();
-                    }
-                });
-                nid.show();
-                break;
-
-            default:
-
-                break;
-        }
-    }
-*/
 
     public void updateItemLabelAction(final int index) {
         URVItem item = items.get(index);
@@ -716,6 +800,124 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         for(int i=0; i < items.size(); i++) {
             updateItemLabelAction(i);
         }
+    }
+
+    private void onCheckBoxClick(int itemIndex) {
+        final URVItem currentItem = items.get(itemIndex);
+        currentClickAction = URVConst.ClickerAction.CUSTOM;
+
+        currentItem.setChecked(!currentItem.isChecked());
+        currentItem.Value.setValue(currentItem.isChecked());
+
+
+        if(currentItem.isChecked()) {
+            currentItem.setCustomBackgroundColor(colorBckChecked);
+            currentItem.Icon.setIconText(iconCheckboxChecked);
+        } else {
+            currentItem.setCustomBackgroundColor(colorBckUnchecked);
+            currentItem.Icon.setIconText(iconCheckboxUnchecked);
+        }
+
+        notifyItemChanged(itemIndex);
+
+        if(eventProperty != null) eventProperty.onPropertyChanges(itemIndex, -1, -1, currentItem.Value);
+    }
+
+
+    private void onClickPropertyText(final int index) {
+        final URVItem currentItem = items.get(index);
+
+        if (!(rView.getContext() instanceof Activity))
+           Toast.makeText(rView.getContext(), "Need to use Activity context for RVU properties", Toast.LENGTH_SHORT).show();
+
+        URVTextInputDialog.show(rView.getContext(),
+                currentItem.getDescription(),
+                currentItem.getHint(),
+                currentItem.Value.getValueStr(),
+                Properties.getTextOK(),
+                Properties.getTextCancel(),
+                text -> {
+                    // Обработка введённого текста
+                    currentItem.setTitle(text);
+                    currentItem.Value.setValue(text);
+                    notifyItemChanged(index);
+                    if(eventProperty != null) eventProperty.onPropertyChanges(index, -1, -1, currentItem.Value);
+                    //Toast.makeText(rView.getContext(), "Вы ввели: " + text, Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    private void onClickPropertyList(final int index) {
+        final URVItem currentItem = items.get(index);
+
+        if (!(rView.getContext() instanceof Activity))
+            Toast.makeText(rView.getContext(), "Need to use Activity context for RVU properties", Toast.LENGTH_SHORT).show();
+
+        // Вариант с подтверждением через OK
+        URVSingleChoiceDialog.showWithOk(rView.getContext(),
+                currentItem.getDescription(),
+                currentItem.getValueString().split(";"),
+                currentItem.Value.getValueInt(),
+                Properties.getTextOK(),
+                Properties.getTextCancel(),
+                new URVSingleChoiceDialog.IOnSelectedOneListener() {
+                    @Override
+                    public void onItemSelected(int which, CharSequence item) {
+
+                        try {
+                            if (currentItem.attrExists("icons")) {
+                                String icons = currentItem.attrGet("icons");
+                                String arrIcons[] = icons.split(";");
+                                currentItem.Icon.setIconText(arrIcons[which]);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        currentItem.setTitle(item.toString());
+                        currentItem.Value.setValue(item.toString());
+                        currentItem.Value.setValue(which);
+                        currentItem.setValueInt(which);
+
+                        notifyItemChanged(index);
+                        if(eventProperty != null) eventProperty.onPropertyChanges(index, -1, -1, currentItem.Value);
+                    }
+                });
+    }
+
+
+
+    public IURVRequestActivity eventRequests = null;
+
+    private void onClickPropertyColor(int index) {
+        final URVItem currentItem = items.get(index);
+
+        AppCompatActivity aContext = null;
+        if (rView.getContext() instanceof AppCompatActivity) aContext = (AppCompatActivity) rView.getContext();
+        if((aContext == null) && (eventRequests != null) ) aContext = eventRequests.needActivity();
+
+        if(aContext == null) {
+            Toast.makeText(rView.getContext(), "Need to use AppCompatActivity for context", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        URVColorPickerFS.show(aContext.getSupportFragmentManager(),
+                currentItem.getValueInt(),
+                currentItem.isUseAlpha(),
+                Properties.getTextOK(),
+                Properties.getTextCancel(),
+                Properties.getTextSelect(),
+                new URVColorPickerFS.IOnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int color) {
+                        currentItem.setValueInt(color);
+                        currentItem.setMarkerColor(color);
+                        currentItem.Value.setValue(color);
+
+                        notifyItemChanged(index);
+                        if(eventProperty != null) eventProperty.onPropertyChanges(index, -1, -1, currentItem.Value);
+                    }
+                });
     }
 
 
@@ -1086,8 +1288,11 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
-    public void setupItemModeCheckbox(URVItem item) {
+
+    public void setupItemModeCheckbox(URVItem item, String key, boolean value) {
         item.setItemMode(URVConst.ItemMode.CHECKBOX);
+        item.Value.setup(key, value);
+        item.setChecked(value);
     }
 
     public void setupItemModeProperty(URVItem item) {
@@ -1164,12 +1369,48 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
         }
     }
 
+
+    public void setColorPickerResult(int newColor, int itemIndex) {
+        if(!isValidIndex(itemIndex)) return;
+        final URVItem currentItem = items.get(itemIndex);
+        currentItem.setMarkerColor(newColor);
+        currentItem.Value.setValue(newColor);
+        currentItem.setValueInt(newColor);
+        notifyItemChanged(itemIndex);
+        if(eventProperty != null) eventProperty.onPropertyChanges(itemIndex, -1, -1, currentItem.Value);
+    }
+
+    public boolean isValidIndex(int index) {
+        return (items != null) & (items.size() > index) & (index >= 0);
+    }
+
     public boolean isDebug() {
         return debug;
     }
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+
+    public String getPreviewString(String[] array, int count, boolean addSpace, boolean asBrackets) {
+        if (array == null || array.length == 0) return "";
+
+        String ts, te;
+        if(asBrackets) {
+            ts = "(";
+            te = ")";
+        } else {
+            ts = "";
+            te = "";
+        }
+
+        if (array.length <= count) {
+            return " " + ts + TextUtils.join(", ", array) + te;
+        } else {
+            String[] subArray = Arrays.copyOfRange(array, 0, count);
+            return " " + ts + TextUtils.join(", ", subArray) + ", ..." + te;
+        }
     }
 
 
@@ -1349,7 +1590,6 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
 
-
         private void techViewSetup(View v, boolean modeVisible) {
             if(v == null) return;
             v.setClickable(false);
@@ -1409,3 +1649,38 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
 
 }
+/*
+    private void launchCLickAction(final int index, final int clickAction, int idClicker, final boolean longCLick) {
+        URVItem item = items.get(index);
+        if(item == null) return;
+
+        float step = item.getValueChangeStep() * (longCLick ? 10 : 1);
+
+        switch (clickAction) {
+
+            case URVConst.ClickerAction.VALUE_DECREASE:
+                item.Value.dec(step);
+                updateItemLabelAction(index);
+                break;
+
+            case URVConst.ClickerAction.VALUE_INCREASE:
+                item.Value.inc(step);
+                updateItemLabelAction(index);
+                break;
+
+            case URVConst.ClickerAction.SHOW_INPUT_NUMBER_DIALOG:
+                NumberInputDialog nid = new NumberInputDialog(rView.getContext(), null, new NumberInputDialog.INumberInput() {
+                    @Override
+                    public void onNumberSet(float number) {
+                        Toast.makeText(rView.getContext(), "Введено: " + number, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                nid.show();
+                break;
+
+            default:
+
+                break;
+        }
+    }
+*/

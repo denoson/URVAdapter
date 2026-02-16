@@ -6,6 +6,9 @@ public class URVProperties {
     private boolean titleVisible = true;
     private boolean descrVisible = true;
 
+    private String textOK = "OK";
+    private String textCancel = "Cancel";
+    private String textSelect = "Select";
 
     public boolean isTitleVisible() {
         return titleVisible;
@@ -29,5 +32,31 @@ public class URVProperties {
 
     public void setAutoHideEmpty(boolean autoHideEmpty) {
         this.autoHideEmpty = autoHideEmpty;
+    }
+
+
+
+    public String getTextOK() {
+        return textOK;
+    }
+
+    public void setTextOK(String textOK) {
+        this.textOK = textOK;
+    }
+
+    public String getTextCancel() {
+        return textCancel;
+    }
+
+    public void setTextCancel(String textCancel) {
+        this.textCancel = textCancel;
+    }
+
+    public String getTextSelect() {
+        return textSelect;
+    }
+
+    public void setTextSelect(String textSelect) {
+        this.textSelect = textSelect;
     }
 }

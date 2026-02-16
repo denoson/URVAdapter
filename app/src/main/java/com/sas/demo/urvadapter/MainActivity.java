@@ -15,9 +15,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.sas.urvadapter.URVColorPickerFS;
+import com.sas.urvadapter.URVDialogs;
 import com.sas.urvadapter.URVNumberDialogConfig;
 import com.sas.urvadapter.URVNumberInputDialog;
 import com.sas.urvadapter.URVAdapter;
+import com.sas.urvadapter.URVSingleChoiceDialog;
+import com.sas.urvadapter.URVTextInputDialog;
 
 /**
  * Date: 2024.09.25
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private URVAdapter adapter;
     private RecyclerView list;
 
+    TextView lbl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        TextView lbl = findViewById(R.id.lbl);
+        lbl = findViewById(R.id.lbl);
         lbl.setText("Adapter Version " + URVAdapter.VERSION);
 
         Button btn = findViewById(R.id.btnDemoList);
@@ -86,7 +91,55 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void showMyCustomDialog() {
+
+        URVDialogs.inputNumber(this, 0, 100, true, true, 0, new URVNumberInputDialog.INumberInput() {
+            @Override
+            public void onNumberSet(float number) {
+
+            }
+        });
+
+
+/*
+        URVDialogs.inputText(this, "Sample", "input info", "EFX", "Ok", "Cancel",
+                new URVTextInputDialog.ICallbackInputText() {
+            @Override
+            public void onTextEntered(String text) {
+
+            }
+        });
+
+
+
+
+
+        URVDialogs.chooseOne(this, "Select", new String[]{"Music", "Books", "Travel"}, 1,
+                "OK", "Cancel",
+                new URVSingleChoiceDialog.IOnSelectedOneListener() {
+            @Override
+            public void onItemSelected(int which, CharSequence item) {
+
+            }
+        });
+
+
+        URVDialogs.chooseColor(getSupportFragmentManager(), 0, false, "Ok", "Cancel", "Select",
+                new URVColorPickerFS.IOnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int color) {
+
+                    }
+                });
+*/
+
+        lbl.setText(URVDialogs.getColorHistory());
+
+    }
+
+
+    private void showMyCustomDialogNum() {
 
         URVNumberDialogConfig nidCfg = new URVNumberDialogConfig();
         nidCfg.minValue = 10;

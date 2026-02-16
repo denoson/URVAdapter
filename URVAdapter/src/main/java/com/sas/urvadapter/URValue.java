@@ -15,7 +15,6 @@ public class URValue {
     private float min = 0;
     private float max = 0;
 
-
     /**
      * Constructor ..................................
      */
@@ -175,9 +174,13 @@ public class URValue {
         return valueStr;
     }
 
+    public boolean getValueBool() {
+        return valueBool;
+    }
+
 
     public boolean isValueBool() {
-        return valueBool;
+        return type == URVConst.ValueType.BOOLEAN;
     }
 
 
@@ -198,6 +201,9 @@ public class URValue {
         return type == URVConst.ValueType.FLOAT;
     }
 
+    public boolean isString() {
+        return type == URVConst.ValueType.STRING;
+    }
 
     public float getMin() {
         return min;
@@ -206,4 +212,5 @@ public class URValue {
     public float getMax() {
         return max;
     }
+
 }

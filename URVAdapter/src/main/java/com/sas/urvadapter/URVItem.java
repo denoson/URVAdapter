@@ -34,6 +34,7 @@ public class URVItem {
     private boolean checked = false;
     private boolean visible = true;
     private boolean enabled = true;
+    private boolean useAlpha = false;
 
     private String title = "";
     private String description = "";
@@ -583,7 +584,13 @@ public class URVItem {
     }
 
 
+    public boolean isUseAlpha() {
+        return useAlpha;
+    }
 
+    public void setUseAlpha(boolean useAlpha) {
+        this.useAlpha = useAlpha;
+    }
 
     public void attrSet(String key, String value) {
         Attributes.put(key, value);

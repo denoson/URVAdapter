@@ -3,6 +3,8 @@ package com.sas.demo.urvadapter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,8 +18,11 @@ import com.sas.urvadapter.IURVPropertyEvents;
 import com.sas.urvadapter.URVAdapter;
 import com.sas.urvadapter.URVConst;
 import com.sas.urvadapter.URVItem;
-import com.sas.urvadapter.URVItemClicker;
+import com.sas.urvadapter.URVSingleChoiceDialog;
 import com.sas.urvadapter.URValue;
+
+import android.graphics.Color;
+import java.util.Random;
 
 public class DemoPropertyActivity extends AppCompatActivity {
 
@@ -36,6 +41,8 @@ public class DemoPropertyActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
         initResources();
         initAdapter();
     }
@@ -46,12 +53,33 @@ public class DemoPropertyActivity extends AppCompatActivity {
         Log.d(getClass().getSimpleName(), "initAdapter");
         list = findViewById(R.id.rvList);
         adapter = new URVAdapter();
-        adapter.initRecyclerView(getApplicationContext(), list, true, 0);
+        adapter.initRecyclerView(this, list, true, 0);
         adapter.initDefaultListParams(true, Config.FONT_ICON);
 
         adapter.eventsItem = new IURVItemEvents() {
             @Override
             public void onItemClick(int index) {
+                URVItem item = adapter.getItem(index);
+
+                Log.d("DemoPropertyActivity",
+                        String.format("(a) onItemClick index: %d, action: %d, key: %s, value: %s",
+                                index,
+                                item.getAction(),
+                                item.Value.getKey(),
+                                item.Value.asString()
+                        ));
+
+                switch (item.getViewType()) {
+
+                    case 2:
+                        Log.d("DemoPropertyActivity", "(a) update random color...");
+                        item.setMarkerColor(adapter.getLibColor(adapter.getRandomNum(0, 15)));
+                        adapter.notifyItemChanged(index);
+                        break;
+
+                }
+
+                showDialoger();
 
             }
 
@@ -80,6 +108,11 @@ public class DemoPropertyActivity extends AppCompatActivity {
                         ));
             }
         };
+
+    }
+
+    private void showDialoger() {
+
     }
 
 
@@ -167,6 +200,8 @@ public class DemoPropertyActivity extends AppCompatActivity {
 
 */
 
+
+/*
         // [4] Item Property marker
         item = adapter.addItem(0, 4, "Item type 4x0", "Property value editor, no min, max", null);
         //item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
@@ -177,7 +212,7 @@ public class DemoPropertyActivity extends AppCompatActivity {
 
 
         // [4] Item Property marker, min, max
-        item = adapter.addItem(0, 4, "Item type 4x0", "Property value editor, min: 10, max: 20", null);
+        item = adapter.addItem(0, 4, "Item type 4x1", "Property value editor, min: 10, max: 20", null);
         //item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
         item.Icon.setIconText("X");
         adapter.setupItemModeProperty(item);
@@ -187,7 +222,7 @@ public class DemoPropertyActivity extends AppCompatActivity {
 
 
         // [4] Item Property marker, min, max
-        item = adapter.addItem(0, 4, "Item type 4x0", "Property value editor, min: 0, max: 3", null);
+        item = adapter.addItem(0, 4, "Item type 4x2", "Property value editor, min: 0, max: 3", null);
         //item.setCustomBackgroundColor(adapter.HexToColor("#303030", 0));
         item.Icon.setIconText("X");
         adapter.setupItemModeProperty(item);
@@ -195,7 +230,10 @@ public class DemoPropertyActivity extends AppCompatActivity {
         item.Value.setupMinMax(0, 5);
         item.setValueChangeStep(0.3f);
         item.initEditorPlusMinus();
-
+*/
+        adapter.addPropertyNumber(0, "Input INT number", "free value, no min max", "num-a", 123, 0, 0, 0, "X");
+        adapter.addPropertyNumber(0, "Input INT number", "free value, with min max (0-100)", "num-b", 45, 0, 100, 0, "X");
+        adapter.addPropertyNumberF(0, "Input FLOAT number", "free value, min max step", "num-c", 1.5f, 0.5f, 5.8f, 0.3f, "X");
 
 
         // [5] Item Property marker
@@ -239,6 +277,30 @@ public class DemoPropertyActivity extends AppCompatActivity {
         item.setClickerValue(String.valueOf(URVConst.ClickerID.BUTTON_2), "Q2");
         item.setClickerValue(String.valueOf(URVConst.ClickerID.BUTTON_3), "Q3");
         item.setClickerValue(String.valueOf(URVConst.ClickerID.BUTTON_4), "Q4");
+
+
+        // Boolean property
+        adapter.addPropertyCheckbox(0, "Checkbox-A", "Boolean property: true or false", "key-bool-a", true);
+        adapter.addPropertyCheckbox(0, "Checkbox-B", "Boolean property: true or false", "key-bool-b", false);
+
+
+
+        // String Property
+        adapter.addPropertyText(0, "Car title", "c-title", "Hummer", "G");
+        adapter.addPropertyText(0, "Music", "c-mus", "", "J");
+
+        String[] options = {"Red", "Green", "Blue"};
+        adapter.addPropertyList(0, "Select Color", "clr", options, 0, "R");
+
+        String[] icons = {"R", "G", "B"};
+        adapter.addPropertyList(0, "Select Color", "clr", options, icons, 0);
+
+
+        // Color Property
+        adapter.addPropertyColorExt(0, "Color-A", "External color picker example", "color-a", 0xFFF44336, "X");
+        adapter.addPropertyColorExt(0, "Color-B", "External color picker example", "color-b", 0xFF607D8B, "X");
+        URVItem itemC =  adapter.addPropertyColorExt(0, "Color-C (+Alpha)", "External color picker example", "color-c", 0xFFCDDC39, "X");
+        itemC.setUseAlpha(true);
     }
 
 
@@ -314,5 +376,18 @@ public class DemoPropertyActivity extends AppCompatActivity {
 
     private void toLog(String info) {
         Log.d(getClass().getSimpleName(), info);
+    }
+
+
+    /**
+     * Генерирует случайный непрозрачный цвет (альфа = 255).
+     * @return цвет в формате 0xFFRRGGBB
+     */
+    private static final Random random = new Random();
+    public static int randomColor() {
+        int r = random.nextInt(256);
+        int g = random.nextInt(256);
+        int b = random.nextInt(256);
+        return Color.rgb(r, g, b);
     }
 }
