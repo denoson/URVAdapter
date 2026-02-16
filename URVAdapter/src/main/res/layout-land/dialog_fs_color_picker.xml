@@ -6,8 +6,7 @@
     android:id="@+id/body_fs_picker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
-
+    android:background="#000000">
 
     <LinearLayout
         android:id="@+id/pnl_content"
@@ -19,8 +18,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scrollView2"
         app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Верхняя палитра HUE -->
 
         <!-- Нижняя палитра -->
         <GridView
@@ -54,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="Alpha:"
-                android:textColor="@color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
             <SeekBar
@@ -71,7 +68,7 @@
                 android:layout_marginStart="8dp"
                 android:gravity="center_horizontal"
                 android:text="255"
-                android:textColor="@color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -111,7 +108,7 @@
                 android:fontFamily="monospace"
                 android:padding="8dp"
                 android:text="#008BC3"
-                android:textColor="@color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
             <Button
@@ -120,14 +117,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="CANCEL"
-                android:textColor="@color/white" />
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/button_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SELECT"
-                android:textColor="@color/white" />
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
     </LinearLayout>
