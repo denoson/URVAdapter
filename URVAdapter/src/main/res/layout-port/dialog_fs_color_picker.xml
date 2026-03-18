@@ -170,6 +170,14 @@
             android:textColor="#FFFFFF" />
 
         <Button
+            android:id="@+id/button_no_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Color"
+            android:layout_marginEnd="8dp"
+            android:textColor="#FFFFFF" />
+
+        <Button
             android:id="@+id/button_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

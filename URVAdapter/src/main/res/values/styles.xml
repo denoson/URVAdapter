@@ -9,7 +9,24 @@
         <item name="android:background">#121212</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="android:textColorSecondary">#B3B3B3</item>
-        <item name="colorAccent">#BB86FC</item>
+        <item name="colorAccent">#FFBF85</item>
+    </style>
+
+    <style name="URVDarkDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">#131B26</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#C1C1C1</item>
+
+        <!-- Принудительно задаем стиль для кнопок -->
+        <item name="buttonBarPositiveButtonStyle">@style/URVDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/URVDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/URVDialogButton</item>
+    </style>
+
+    <!-- Отдельный стиль для текста самой кнопки -->
+    <style name="URVDialogButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">#FFBB00</item> <!-- Ваш нужный цвет -->
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

@@ -96,6 +96,7 @@ public class URVColorPickerFS extends DialogFragment {
     private int currentColor;
     private int currentAlpha = 255;
     private boolean enableAlpha;
+    private boolean enableNoColorButton = true;
     private boolean horizontal = true;
 
     private String okText;
@@ -111,6 +112,7 @@ public class URVColorPickerFS extends DialogFragment {
     private TextView hexText;
     private Button cancelButton;
     private Button selectButton;
+    private Button noColorButton;
     private View selectedHueView = null;
     private int[] normalHueColors;
 
@@ -227,6 +229,7 @@ public class URVColorPickerFS extends DialogFragment {
         hexText = view.findViewById(R.id.hex_text);
         cancelButton = view.findViewById(R.id.button_cancel);
         selectButton = view.findViewById(R.id.button_select);
+        noColorButton = view.findViewById(R.id.button_no_color);
 
         alphaPanel = view.findViewById(R.id.alpha_panel);
         alphaSeekBar = view.findViewById(R.id.alpha_seekbar);
@@ -368,16 +371,21 @@ public class URVColorPickerFS extends DialogFragment {
         hexText.setOnClickListener(v -> showHexInputDialog());
 
         cancelButton.setOnClickListener(v -> dismiss());
+
         selectButton.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onColorSelected(currentColor);
-            }
+            if (listener != null) listener.onColorSelected(currentColor);
             addToHistory(currentColor);
-            if (presetPaletteAdapter != null) {
-                presetPaletteAdapter.refreshHistory();
-            }
+            if (presetPaletteAdapter != null) presetPaletteAdapter.refreshHistory();
             dismiss();
         });
+
+        if(noColorButton != null) {
+            if(!enableNoColorButton) noColorButton.setVisibility(View.GONE);
+            noColorButton.setOnClickListener(v -> {
+                if (listener != null) listener.onColorSelected(0);
+                dismiss();
+            });
+        }
 
         updateBottomPreview();
     }
@@ -537,6 +545,14 @@ public class URVColorPickerFS extends DialogFragment {
         });
         builder.setNegativeButton(cancelText, null);
         builder.show();
+    }
+
+    public boolean isEnableNoColorButton() {
+        return enableNoColorButton;
+    }
+
+    public void setEnableNoColorButton(boolean enableNoColorButton) {
+        this.enableNoColorButton = enableNoColorButton;
     }
 
     @Override

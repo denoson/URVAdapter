@@ -1,6 +1,6 @@
 package com.sas.urvadapter;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.text.TextUtils;
 import android.widget.EditText;
@@ -53,7 +53,7 @@ public final class URVTextInputDialog {
         if(TextUtils.isEmpty(txtCancel)) txtCancel = "Cancel";
 
         // Строим и показываем диалог
-        new AlertDialog.Builder(context)
+        new AlertDialog.Builder(context, R.style.URVDarkDialog)
                 .setTitle(title)
                 .setView(input)
                 .setPositiveButton(txtOK, (dialog, which) -> {

@@ -43,7 +43,7 @@ public final class URVSingleChoiceDialog {
         if(TextUtils.isEmpty(txtOk)) txtOk = "OK";
         if(TextUtils.isEmpty(txtCancel)) txtCancel = "Cancel";
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.URVDarkDialog);
         builder.setTitle(title);
 
         builder.setSingleChoiceItems(items, checkedItem, (dialog, which) -> {
