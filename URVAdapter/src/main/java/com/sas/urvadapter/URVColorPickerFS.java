@@ -330,11 +330,16 @@ public class URVColorPickerFS extends DialogFragment {
             } else {
                 color = normalPaletteAdapter.getItem(position);
             }
+
             if (enableAlpha) {
-                currentColor = (color & 0x00FFFFFF) | (currentAlpha << 24);
+                int alpha = Color.alpha(color);
+                currentColor = (color & 0x00FFFFFF) | (alpha << 24);
+                if(alphaSeekBar != null) alphaSeekBar.setProgress(alpha);
+                //currentColor = (color & 0x00FFFFFF) | (currentAlpha << 24); // альтернативный вариант заменять альфа как к alphaSeekBar
             } else {
                 currentColor = color | 0xFF000000;
             }
+
             selectedPalettePosition = position;
             if (presetMode) {
                 presetPaletteAdapter.setSelectedPosition(position);

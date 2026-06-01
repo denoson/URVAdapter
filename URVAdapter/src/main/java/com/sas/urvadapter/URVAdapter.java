@@ -827,8 +827,10 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     private void onClickPropertyText(final int index) {
         final URVItem currentItem = items.get(index);
 
-        if (!(rView.getContext() instanceof Activity))
-           Toast.makeText(rView.getContext(), "Need to use Activity context for RVU properties", Toast.LENGTH_SHORT).show();
+        if (!(rView.getContext() instanceof Activity)) {
+            Toast.makeText(rView.getContext(), "Need to use Activity context for RVU properties", Toast.LENGTH_SHORT).show();
+            Log.w(this.getClass().getSimpleName(), "adapter context class: " + (rView.getContext() == null ? "Null" :  rView.getContext().getClass().getSimpleName()));
+        }
 
         URVTextInputDialog.show(rView.getContext(),
                 currentItem.getDescription(),
