@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
         lbl = findViewById(R.id.lbl);
         lbl.setText("Adapter Version " + URVAdapter.VERSION);
 

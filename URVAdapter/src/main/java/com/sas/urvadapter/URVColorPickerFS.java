@@ -50,7 +50,7 @@ public class URVColorPickerFS extends DialogFragment {
     private static final int PALETTE_COLS = 10;
 
     // Константы верхней панели HUE
-    private static final int NORMAL_HUE_COUNT = 30;
+    public static int NORMAL_HUE_COUNT = 30;
     private static final int TOTAL_HUE_ITEMS = NORMAL_HUE_COUNT + 1; // включая специальный элемент
 
     // Статическая история (глобальная для всех экземпляров диалога)
@@ -311,14 +311,16 @@ public class URVColorPickerFS extends DialogFragment {
             int gridHeight = paletteGrid.getHeight();
             if (gridHeight > 0) {
                 float density = getResources().getDisplayMetrics().density;
+                int minHeightPx = (int) (40 * density);
                 int verticalSpacing = (int) (4 * density);
                 int paddingTop = paletteGrid.getPaddingTop();
                 int paddingBottom = paletteGrid.getPaddingBottom();
                 int availableHeight = gridHeight - paddingTop - paddingBottom - (PALETTE_ROWS - 1) * verticalSpacing;
                 if (availableHeight > 0) {
-                    int rowHeight = availableHeight / PALETTE_ROWS;
-                    normalPaletteAdapter.setRowHeight(rowHeight);
-                    presetPaletteAdapter.setRowHeight(rowHeight);
+                    int calculatedRowHeight = availableHeight / PALETTE_ROWS;
+                    int finalRowHeight = Math.max(calculatedRowHeight, minHeightPx);
+                    normalPaletteAdapter.setRowHeight(finalRowHeight);
+                    presetPaletteAdapter.setRowHeight(finalRowHeight);
                 }
             }
         });
@@ -574,6 +576,10 @@ public class URVColorPickerFS extends DialogFragment {
         alphaPanel = null;
         alphaSeekBar = null;
         alphaValueText = null;
+
+        normalPaletteAdapter = null;
+        presetPaletteAdapter = null;
+        currentPaletteAdapter = null;
     }
 
     // ===================== Обычный адаптер =====================
