@@ -306,6 +306,7 @@ public class URVColorPickerFS extends DialogFragment {
 
         paletteGrid.setNumColumns(PALETTE_COLS);
 
+        /*
         // Расчёт высоты строки палитры (безопасный)
         paletteGrid.post(() -> {
             int gridHeight = paletteGrid.getHeight();
@@ -324,6 +325,43 @@ public class URVColorPickerFS extends DialogFragment {
                 }
             }
         });
+         */
+
+        paletteGrid.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            int gridWidth = right - left;
+            int gridHeight = bottom - top;
+
+            if (gridWidth > 0 && gridHeight > 0) {
+                float density = getResources().getDisplayMetrics().density;
+                int verticalSpacing = (int) (4 * density);
+                int minHeightPx = (int) (40 * density); // Ваша минимальная высота
+
+                int availableHeight = gridHeight - v.getPaddingTop() - v.getPaddingBottom() - (PALETTE_ROWS - 1) * verticalSpacing;
+                int calculatedRowHeight = availableHeight > 0 ? availableHeight / PALETTE_ROWS : 0;
+
+                // Выбираем максимальное (либо расчетную высоту, либо минимальный порог)
+                int finalRowHeight = Math.max(calculatedRowHeight, minHeightPx);
+
+                // Проверяем, отличается ли высота от текущей, чтобы избежать зацикливания
+                if (finalRowHeight > 0 && normalPaletteAdapter.getRowHeight() != finalRowHeight) {
+
+                    // МАГИЯ ИСПРАВЛЕНИЯ: уводим обновление из текущего layout-пасса
+                    v.post(() -> {
+                        // Проверяем на null, так как диалог мог уже закрыться к моменту выполнения post
+                        if (normalPaletteAdapter != null && presetPaletteAdapter != null) {
+                            normalPaletteAdapter.setRowHeight(finalRowHeight);
+                            presetPaletteAdapter.setRowHeight(finalRowHeight);
+
+                            // Теперь это вызовется безопасно и сетка не исчезнет
+                            normalPaletteAdapter.notifyDataSetChanged();
+                            presetPaletteAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }
+            }
+        });
+
 
         paletteGrid.setOnItemClickListener((parent, v, position, id) -> {
             int color;
@@ -654,6 +692,8 @@ public class URVColorPickerFS extends DialogFragment {
             }
             return view;
         }
+
+        public int getRowHeight() { return rowHeight; }
     }
 
     // ===================== Адаптер для первого элемента (пресет) =====================
@@ -777,6 +817,8 @@ public class URVColorPickerFS extends DialogFragment {
             }
             return view;
         }
+
+        public int getRowHeight() { return rowHeight; }
     }
 
     // Удобный метод для показа
