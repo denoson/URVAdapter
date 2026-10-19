@@ -632,6 +632,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
 
     private void onItemLongClick(final int index) {
         if(debug) Log.d(LOGTAG, String.format("onItemLongClick index: %d", index));
+        if(!isValidIndex(index)) return; // NO_POSITION (-1): item removed or data changed before
         if (eventsItem != null) {
             eventsItem.onLongClick(index);
         }
@@ -642,6 +643,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     // без внутренних кликателей
     private void onItemClick(int index) {
         if(debug) Log.d(LOGTAG, String.format("onItemClick index: %d", index));
+        if(!isValidIndex(index)) return; // NO_POSITION (-1): item removed or data changed before layout
         final URVItem item = items.get(index);
 
         switch (item.getItemMode()) {
@@ -671,6 +673,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     // эта функция вызывается для item если несколько кликательных элементов
     // например 2 - 3 доп кнопки
     private void onItemClickEx(int itemIndex, int idClicker, boolean longCLick) {
+        if(!isValidIndex(itemIndex)) return; // NO_POSITION (-1)
         int clickAction = URVConst.ClickerAction.CUSTOM;
 
         URVItem item = items.get(itemIndex);
@@ -1383,7 +1386,7 @@ public class URVAdapter extends RecyclerView.Adapter<URVAdapter.URViewHolder> {
     }
 
     public boolean isValidIndex(int index) {
-        return (items != null) & (items.size() > index) & (index >= 0);
+        return (items != null) && (index >= 0) && (index < items.size());
     }
 
     public boolean isDebug() {
